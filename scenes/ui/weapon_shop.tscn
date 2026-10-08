@@ -1,0 +1,78 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/weapon_shop.gd" id="1_scri"]
+
+[node name="WeaponShop" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_scri")
+
+[node name="Dim" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+color = Color(0.02, 0.03, 0.05, 0.6)
+
+[node name="Center" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="Center"]
+layout_mode = 2
+
+[node name="VBox" type="VBoxContainer" parent="Center/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ShopTitle" type="Label" parent="Center/Panel/VBox"]
+layout_mode = 2
+unique_name_in_owner = true
+theme_type_variation = &"HeaderLabel"
+theme_override_font_sizes/font_size = 40
+text = "WEAPON BROKEN!"
+horizontal_alignment = 1
+
+[node name="ShopSubtitle" type="Label" parent="Center/Panel/VBox"]
+layout_mode = 2
+unique_name_in_owner = true
+text = "Choose your next weapon"
+horizontal_alignment = 1
+
+[node name="Cards" type="HBoxContainer" parent="Center/Panel/VBox"]
+layout_mode = 2
+unique_name_in_owner = true
+theme_override_constants/separation = 12
+
+[node name="ShopCoins" type="Label" parent="Center/Panel/VBox"]
+layout_mode = 2
+unique_name_in_owner = true
+theme_override_colors/font_color = Color(1, 0.84, 0.36, 1)
+theme_override_font_sizes/font_size = 22
+text = "YOUR COINS: 0"
+horizontal_alignment = 1
+
+[node name="ShopMessage" type="Label" parent="Center/Panel/VBox"]
+layout_mode = 2
+unique_name_in_owner = true
+theme_type_variation = &"SmallLabel"
+horizontal_alignment = 1
+
+[node name="LeaveButton" type="Button" parent="Center/Panel/VBox"]
+layout_mode = 2
+unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 40)
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 16
+text = "STAY UNARMED"

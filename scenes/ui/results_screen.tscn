@@ -1,0 +1,139 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/results_screen.gd" id="1_scri"]
+
+[node name="ResultsScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_scri")
+
+[node name="Dim" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+color = Color(0.02, 0.03, 0.05, 0.72)
+
+[node name="Center" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ResultPanel" type="PanelContainer" parent="Center"]
+layout_mode = 2
+unique_name_in_owner = true
+custom_minimum_size = Vector2(440, 0)
+
+[node name="VBox" type="VBoxContainer" parent="Center/ResultPanel"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="ResultTitle" type="Label" parent="Center/ResultPanel/VBox"]
+layout_mode = 2
+unique_name_in_owner = true
+theme_type_variation = &"HeaderLabel"
+theme_override_font_sizes/font_size = 44
+text = "GAME OVER"
+horizontal_alignment = 1
+
+[node name="ResultSubtitle" type="Label" parent="Center/ResultPanel/VBox"]
+layout_mode = 2
+unique_name_in_owner = true
+theme_type_variation = &"SmallLabel"
+theme_override_font_sizes/font_size = 16
+horizontal_alignment = 1
+
+[node name="Sep1" type="HSeparator" parent="Center/ResultPanel/VBox"]
+layout_mode = 2
+
+[node name="Stats" type="GridContainer" parent="Center/ResultPanel/VBox"]
+layout_mode = 2
+theme_override_constants/h_separation = 40
+theme_override_constants/v_separation = 6
+columns = 2
+
+[node name="ScoreValueLabel" type="Label" parent="Center/ResultPanel/VBox/Stats"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+text = "SCORE"
+
+[node name="ScoreValue" type="Label" parent="Center/ResultPanel/VBox/Stats"]
+layout_mode = 2
+unique_name_in_owner = true
+theme_override_colors/font_color = Color(1, 0.84, 0.36, 1)
+theme_override_font_sizes/font_size = 22
+text = "0"
+horizontal_alignment = 2
+
+[node name="CoinsValueLabel" type="Label" parent="Center/ResultPanel/VBox/Stats"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+text = "COINS COLLECTED"
+
+[node name="CoinsValue" type="Label" parent="Center/ResultPanel/VBox/Stats"]
+layout_mode = 2
+unique_name_in_owner = true
+theme_override_colors/font_color = Color(1, 0.84, 0.36, 1)
+theme_override_font_sizes/font_size = 22
+text = "0"
+horizontal_alignment = 2
+
+[node name="TimeValueLabel" type="Label" parent="Center/ResultPanel/VBox/Stats"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+text = "TIME SURVIVED"
+
+[node name="TimeValue" type="Label" parent="Center/ResultPanel/VBox/Stats"]
+layout_mode = 2
+unique_name_in_owner = true
+theme_override_colors/font_color = Color(1, 0.84, 0.36, 1)
+theme_override_font_sizes/font_size = 22
+text = "0"
+horizontal_alignment = 2
+
+[node name="LevelValueLabel" type="Label" parent="Center/ResultPanel/VBox/Stats"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+text = "HIGHEST LEVEL"
+
+[node name="LevelValue" type="Label" parent="Center/ResultPanel/VBox/Stats"]
+layout_mode = 2
+unique_name_in_owner = true
+theme_override_colors/font_color = Color(1, 0.84, 0.36, 1)
+theme_override_font_sizes/font_size = 22
+text = "0"
+horizontal_alignment = 2
+
+[node name="Sep2" type="HSeparator" parent="Center/ResultPanel/VBox"]
+layout_mode = 2
+
+[node name="Buttons" type="HBoxContainer" parent="Center/ResultPanel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 14
+alignment = 1
+
+[node name="PrimaryButton" type="Button" parent="Center/ResultPanel/VBox/Buttons"]
+layout_mode = 2
+unique_name_in_owner = true
+custom_minimum_size = Vector2(190, 46)
+text = "RESTART"
+
+[node name="MenuButton" type="Button" parent="Center/ResultPanel/VBox/Buttons"]
+layout_mode = 2
+unique_name_in_owner = true
+custom_minimum_size = Vector2(190, 46)
+text = "MAIN MENU"

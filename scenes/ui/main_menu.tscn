@@ -1,0 +1,169 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/main_menu.gd" id="1_scri"]
+[ext_resource type="Texture2D" path="res://assets/sprites/abante/background.png" id="2_text"]
+[ext_resource type="Texture2D" path="res://assets/sprites/abante/ground.png" id="3_text"]
+[ext_resource type="Texture2D" path="res://assets/sprites/abante/player.png" id="4_text"]
+[ext_resource type="Texture2D" path="res://assets/sprites/abante/weapon_best.png" id="5_text"]
+[ext_resource type="Texture2D" path="res://assets/sprites/abante/crocodile.png" id="6_text"]
+[ext_resource type="Texture2D" path="res://assets/sprites/abante/snake.png" id="7_text"]
+[ext_resource type="Texture2D" path="res://assets/sprites/abante/bird.png" id="8_text"]
+[ext_resource type="Texture2D" path="res://assets/sprites/abante/coin.png" id="9_text"]
+[ext_resource type="PackedScene" path="res://scenes/ui/settings_menu.tscn" id="10_pack"]
+
+[sub_resource type="Gradient" id="Gradient_1"]
+offsets = PackedFloat32Array(0, 0.55, 1)
+colors = PackedColorArray(0, 0, 0, 0.45, 0, 0, 0, 0, 0, 0, 0, 0.35)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_2"]
+gradient = SubResource("Gradient_1")
+fill_to = Vector2(0, 1)
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_scri")
+
+[node name="Background" type="TextureRect" parent="."]
+unique_name_in_owner = true
+offset_right = 2115.0
+offset_bottom = 540.0
+mouse_filter = 2
+texture = ExtResource("2_text")
+expand_mode = 1
+
+[node name="Shade" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = SubResource("GradientTexture2D_2")
+expand_mode = 1
+
+[node name="GroundStrip" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -60.0
+offset_bottom = 15.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+texture_repeat = 2
+texture = ExtResource("3_text")
+expand_mode = 1
+stretch_mode = 1
+
+[node name="Parade" type="Node2D" parent="."]
+unique_name_in_owner = true
+
+[node name="Hero" type="Sprite2D" parent="Parade"]
+position = Vector2(150, 446.5)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("4_text")
+
+[node name="Sword" type="Sprite2D" parent="Parade/Hero"]
+position = Vector2(19, -3)
+texture = ExtResource("5_text")
+
+[node name="Coin1" type="Sprite2D" parent="Parade"]
+position = Vector2(250, 470)
+texture = ExtResource("9_text")
+
+[node name="Coin2" type="Sprite2D" parent="Parade"]
+position = Vector2(285, 470)
+texture = ExtResource("9_text")
+
+[node name="Crocodile" type="Sprite2D" parent="Parade"]
+position = Vector2(800, 464)
+scale = Vector2(-1, 1)
+texture = ExtResource("6_text")
+
+[node name="Snake" type="Sprite2D" parent="Parade"]
+position = Vector2(690, 463)
+texture = ExtResource("7_text")
+
+[node name="Bird" type="Sprite2D" parent="Parade"]
+position = Vector2(820, 300)
+scale = Vector2(-1, 1)
+texture = ExtResource("8_text")
+
+[node name="Title" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 26.0
+offset_bottom = 170.0
+grow_horizontal = 2
+mouse_filter = 2
+
+[node name="TitleLabel" type="Label" parent="Title"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_type_variation = &"TitleLabel"
+text = "ABANTE"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Tagline" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 160.0
+offset_bottom = 188.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 18
+text = "Forward, always.  Survive the jungle ruins."
+horizontal_alignment = 1
+
+[node name="Menu" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -140.0
+offset_top = -50.0
+offset_right = 140.0
+offset_bottom = 130.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 14
+
+[node name="StartButton" type="Button" parent="Menu"]
+layout_mode = 2
+unique_name_in_owner = true
+custom_minimum_size = Vector2(280, 52)
+theme_override_font_sizes/font_size = 24
+text = "START GAME"
+
+[node name="SettingsButton" type="Button" parent="Menu"]
+layout_mode = 2
+unique_name_in_owner = true
+custom_minimum_size = Vector2(280, 46)
+text = "SETTINGS"
+
+[node name="ExitButton" type="Button" parent="Menu"]
+layout_mode = 2
+unique_name_in_owner = true
+custom_minimum_size = Vector2(280, 46)
+text = "EXIT"
+
+[node name="SettingsMenu" parent="." instance=ExtResource("10_pack")]
+unique_name_in_owner = true
+visible = false

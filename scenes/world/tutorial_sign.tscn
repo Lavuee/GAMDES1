@@ -1,0 +1,13 @@
+[gd_scene format=3]
+
+[node name="Sign" type="PanelContainer"]
+offset_right = 40.0
+offset_bottom = 30.0
+mouse_filter = 2
+theme_type_variation = &"HudPanel"
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "Hint"
+horizontal_alignment = 1

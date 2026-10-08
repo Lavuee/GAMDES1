@@ -1,0 +1,29 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://assets/sprites/abante/background.png" id="1_text"]
+[ext_resource type="Texture2D" path="res://assets/backgrounds/jungle_bushes.png" id="2_text"]
+
+[node name="JungleBackground" type="Node2D"]
+z_index = -10
+
+[node name="Sky" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.3, 0)
+repeat_size = Vector2(2115, 0)
+repeat_times = 2
+
+[node name="Sprite" type="Sprite2D" parent="Sky"]
+scale = Vector2(1.40625, 1.40625)
+texture = ExtResource("1_text")
+centered = false
+
+[node name="Bushes" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.6, 0)
+repeat_size = Vector2(768, 0)
+repeat_times = 4
+
+[node name="Sprite" type="Sprite2D" parent="Bushes"]
+modulate = Color(0.32, 0.55, 0.36, 1)
+position = Vector2(0, 128)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("2_text")
+centered = false

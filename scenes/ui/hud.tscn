@@ -1,0 +1,209 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/hud.gd" id="1_scri"]
+[ext_resource type="Texture2D" path="res://assets/sprites/abante/coin.png" id="2_text"]
+[ext_resource type="Texture2D" path="res://assets/sprites/abante/weapon_default.png" id="3_text"]
+
+[node name="HUD" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_scri")
+
+[node name="DamageFlash" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+unique_name_in_owner = true
+mouse_filter = 2
+color = Color(0.8, 0, 0, 0)
+
+[node name="TopLeft" type="PanelContainer" parent="."]
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 268.0
+offset_bottom = 58.0
+mouse_filter = 2
+theme_type_variation = &"HudPanel"
+
+[node name="VBox" type="VBoxContainer" parent="TopLeft"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 2
+
+[node name="Hearts" type="HBoxContainer" parent="TopLeft/VBox"]
+layout_mode = 2
+unique_name_in_owner = true
+mouse_filter = 2
+theme_override_constants/separation = 0
+
+[node name="HeartsLabel" type="Label" parent="TopLeft/VBox"]
+layout_mode = 2
+unique_name_in_owner = true
+theme_type_variation = &"SmallLabel"
+text = "HEARTS 10 / 10"
+
+[node name="TopCenter" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -120.0
+offset_top = 8.0
+offset_right = 120.0
+offset_bottom = 62.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_type_variation = &"HudPanel"
+
+[node name="VBox" type="VBoxContainer" parent="TopCenter"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 0
+
+[node name="LevelLabel" type="Label" parent="TopCenter/VBox"]
+layout_mode = 2
+unique_name_in_owner = true
+theme_type_variation = &"HeaderLabel"
+theme_override_font_sizes/font_size = 24
+text = "LEVEL 1"
+horizontal_alignment = 1
+
+[node name="InfoLabel" type="Label" parent="TopCenter/VBox"]
+layout_mode = 2
+unique_name_in_owner = true
+theme_type_variation = &"SmallLabel"
+text = "ENEMIES 0 / 0   00:00"
+horizontal_alignment = 1
+
+[node name="TopRight" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -176.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = 66.0
+grow_horizontal = 0
+mouse_filter = 2
+theme_type_variation = &"HudPanel"
+
+[node name="VBox" type="VBoxContainer" parent="TopRight"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 0
+
+[node name="CoinRow" type="HBoxContainer" parent="TopRight/VBox"]
+layout_mode = 2
+mouse_filter = 2
+alignment = 2
+
+[node name="CoinIcon" type="TextureRect" parent="TopRight/VBox/CoinRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(24, 26)
+mouse_filter = 2
+texture = ExtResource("2_text")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="CoinsLabel" type="Label" parent="TopRight/VBox/CoinRow"]
+layout_mode = 2
+unique_name_in_owner = true
+theme_override_font_sizes/font_size = 20
+text = "x 0"
+
+[node name="ScoreLabel" type="Label" parent="TopRight/VBox"]
+layout_mode = 2
+unique_name_in_owner = true
+theme_override_colors/font_color = Color(1, 0.85, 0.35, 1)
+theme_override_font_sizes/font_size = 18
+text = "SCORE 0"
+horizontal_alignment = 2
+
+[node name="WeaponPanel" type="PanelContainer" parent="."]
+offset_left = 8.0
+offset_top = 64.0
+offset_right = 268.0
+offset_bottom = 136.0
+mouse_filter = 2
+theme_type_variation = &"HudPanel"
+
+[node name="HBox" type="HBoxContainer" parent="WeaponPanel"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 10
+
+[node name="WeaponIcon" type="TextureRect" parent="WeaponPanel/HBox"]
+layout_mode = 2
+unique_name_in_owner = true
+custom_minimum_size = Vector2(52, 52)
+mouse_filter = 2
+texture = ExtResource("3_text")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="VBox" type="VBoxContainer" parent="WeaponPanel/HBox"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 2
+
+[node name="WeaponName" type="Label" parent="WeaponPanel/HBox/VBox"]
+layout_mode = 2
+unique_name_in_owner = true
+theme_override_font_sizes/font_size = 16
+text = "DEFAULT SWORD"
+
+[node name="UsesRow" type="HBoxContainer" parent="WeaponPanel/HBox/VBox"]
+layout_mode = 2
+unique_name_in_owner = true
+mouse_filter = 2
+theme_override_constants/separation = 3
+
+[node name="UsesLabel" type="Label" parent="WeaponPanel/HBox/VBox"]
+layout_mode = 2
+unique_name_in_owner = true
+theme_type_variation = &"SmallLabel"
+text = "USES 7 / 7"
+
+[node name="WeaponHint" type="Label" parent="WeaponPanel/HBox/VBox"]
+layout_mode = 2
+unique_name_in_owner = true
+theme_type_variation = &"SmallLabel"
+
+[node name="Toast" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 196.0
+offset_bottom = 232.0
+grow_horizontal = 2
+theme_type_variation = &"HeaderLabel"
+theme_override_font_sizes/font_size = 24
+horizontal_alignment = 1
+
+[node name="ControlsHint" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -600.0
+offset_top = -30.0
+offset_right = -10.0
+offset_bottom = -8.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_type_variation = &"SmallLabel"
+text = "A/D move  ·  SPACE jump  ·  J / Click attack  ·  S+SPACE drop  ·  B shop  ·  ESC pause"
+horizontal_alignment = 2

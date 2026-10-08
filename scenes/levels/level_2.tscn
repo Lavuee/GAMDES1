@@ -1,0 +1,237 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/levels/level.gd" id="1_scri"]
+[ext_resource type="PackedScene" path="res://scenes/world/jungle_background.tscn" id="2_pack"]
+[ext_resource type="PackedScene" path="res://scenes/world/ground.tscn" id="3_pack"]
+[ext_resource type="PackedScene" path="res://scenes/world/stable_platform.tscn" id="4_pack"]
+[ext_resource type="PackedScene" path="res://scenes/world/disappearing_platform.tscn" id="5_pack"]
+[ext_resource type="PackedScene" path="res://scenes/world/coin.tscn" id="6_pack"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/crocodile.tscn" id="7_pack"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/snake.tscn" id="8_pack"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/bird.tscn" id="9_pack"]
+[ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="10_pack"]
+[ext_resource type="PackedScene" path="res://scenes/world/tutorial_sign.tscn" id="11_pack"]
+
+[node name="Level2" type="Node2D"]
+script = ExtResource("1_scri")
+level_number = 2
+level_title = "Serpent Ruins"
+level_width = 3800.0
+ground_y = 480.0
+
+[node name="Background" parent="." instance=ExtResource("2_pack")]
+
+[node name="Ground" parent="." instance=ExtResource("3_pack")]
+position = Vector2(0, 480)
+width = 3800.0
+
+[node name="Signs" type="Node2D" parent="."]
+
+[node name="Sign1" parent="Signs" instance=ExtResource("11_pack")]
+offset_left = 560.0
+offset_top = 150.0
+offset_right = 600.0
+offset_bottom = 180.0
+
+[node name="Label" parent="Signs/Sign1"]
+text = "Snakes lunge and bite hard (3 hearts). Use platforms!"
+
+[node name="Platforms" type="Node2D" parent="."]
+
+[node name="Stable1" parent="Platforms" instance=ExtResource("4_pack")]
+position = Vector2(480, 375)
+
+[node name="Crumble1" parent="Platforms" instance=ExtResource("5_pack")]
+position = Vector2(650, 270)
+
+[node name="Stable2" parent="Platforms" instance=ExtResource("4_pack")]
+position = Vector2(820, 375)
+
+[node name="Crumble2" parent="Platforms" instance=ExtResource("5_pack")]
+position = Vector2(1350, 375)
+
+[node name="Stable3" parent="Platforms" instance=ExtResource("4_pack")]
+position = Vector2(1520, 270)
+
+[node name="Crumble3" parent="Platforms" instance=ExtResource("5_pack")]
+position = Vector2(1690, 270)
+
+[node name="Stable4" parent="Platforms" instance=ExtResource("4_pack")]
+position = Vector2(1860, 375)
+
+[node name="Stable5" parent="Platforms" instance=ExtResource("4_pack")]
+position = Vector2(2150, 375)
+
+[node name="Crumble4" parent="Platforms" instance=ExtResource("5_pack")]
+position = Vector2(2320, 375)
+
+[node name="Stable6" parent="Platforms" instance=ExtResource("4_pack")]
+position = Vector2(2490, 270)
+
+[node name="Crumble5" parent="Platforms" instance=ExtResource("5_pack")]
+position = Vector2(2660, 175)
+
+[node name="Stable7" parent="Platforms" instance=ExtResource("4_pack")]
+position = Vector2(3000, 375)
+
+[node name="Crumble6" parent="Platforms" instance=ExtResource("5_pack")]
+position = Vector2(3170, 270)
+
+[node name="Stable8" parent="Platforms" instance=ExtResource("4_pack")]
+position = Vector2(3340, 375)
+
+[node name="Coins" type="Node2D" parent="."]
+
+[node name="UpperCoin1" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(480, 351)
+score_value = 2
+
+[node name="UpperCoin2" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(632, 246)
+score_value = 2
+
+[node name="UpperCoin3" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(668, 246)
+score_value = 2
+
+[node name="UpperCoin4" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(820, 351)
+score_value = 2
+
+[node name="UpperCoin5" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(1350, 351)
+score_value = 2
+
+[node name="UpperCoin6" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(1502, 246)
+score_value = 2
+
+[node name="UpperCoin7" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(1538, 246)
+score_value = 2
+
+[node name="UpperCoin8" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(1690, 246)
+score_value = 2
+
+[node name="UpperCoin9" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(1860, 351)
+score_value = 2
+
+[node name="UpperCoin10" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(2150, 351)
+score_value = 2
+
+[node name="UpperCoin11" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(2320, 351)
+score_value = 2
+
+[node name="UpperCoin12" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(2472, 246)
+score_value = 2
+
+[node name="UpperCoin13" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(2508, 246)
+score_value = 2
+
+[node name="UpperCoin14" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(2642, 151)
+score_value = 2
+
+[node name="UpperCoin15" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(2678, 151)
+score_value = 2
+
+[node name="UpperCoin16" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(3000, 351)
+score_value = 2
+
+[node name="UpperCoin17" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(3170, 246)
+score_value = 2
+
+[node name="UpperCoin18" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(3340, 351)
+score_value = 2
+
+[node name="GroundCoin19" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(250, 458)
+score_value = 1
+
+[node name="GroundCoin20" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(290, 458)
+score_value = 1
+
+[node name="GroundCoin21" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(1150, 458)
+score_value = 1
+
+[node name="GroundCoin22" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(1190, 458)
+score_value = 1
+
+[node name="GroundCoin23" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(1230, 458)
+score_value = 1
+
+[node name="GroundCoin24" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(1950, 458)
+score_value = 1
+
+[node name="GroundCoin25" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(1990, 458)
+score_value = 1
+
+[node name="GroundCoin26" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(3050, 458)
+score_value = 1
+
+[node name="GroundCoin27" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(3090, 458)
+score_value = 1
+
+[node name="GroundCoin28" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(3600, 458)
+score_value = 1
+
+[node name="GroundCoin29" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(3640, 458)
+score_value = 1
+
+[node name="GroundCoin30" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(3680, 458)
+score_value = 1
+
+[node name="Enemies" type="Node2D" parent="."]
+
+[node name="Snake1" parent="Enemies" instance=ExtResource("8_pack")]
+position = Vector2(950, 480)
+patrol_left = -180.0
+patrol_right = 180.0
+
+[node name="Crocodile1" parent="Enemies" instance=ExtResource("7_pack")]
+position = Vector2(1500, 480)
+patrol_left = -200.0
+patrol_right = 200.0
+
+[node name="Snake2" parent="Enemies" instance=ExtResource("8_pack")]
+position = Vector2(2250, 480)
+patrol_left = -200.0
+patrol_right = 200.0
+
+[node name="Crocodile2" parent="Enemies" instance=ExtResource("7_pack")]
+position = Vector2(2800, 480)
+patrol_left = -200.0
+patrol_right = 200.0
+
+[node name="Crocodile3" parent="Enemies" instance=ExtResource("7_pack")]
+position = Vector2(3460, 480)
+patrol_left = -250.0
+patrol_right = 250.0
+
+[node name="Hazards" type="Node2D" parent="."]
+
+[node name="Player" parent="." instance=ExtResource("10_pack")]
+position = Vector2(110, 480)
+
+[node name="Pickups" type="Node2D" parent="."]

@@ -1,0 +1,52 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/level_transition.gd" id="1_scri"]
+
+[node name="LevelTransition" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_scri")
+
+[node name="Fade" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+unique_name_in_owner = true
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
+
+[node name="Banner" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+unique_name_in_owner = true
+mouse_filter = 2
+
+[node name="VBox" type="VBoxContainer" parent="Banner"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="BigLabel" type="Label" parent="Banner/VBox"]
+layout_mode = 2
+unique_name_in_owner = true
+theme_type_variation = &"HeaderLabel"
+theme_override_font_sizes/font_size = 52
+text = "LEVEL 1"
+horizontal_alignment = 1
+
+[node name="SmallLabel" type="Label" parent="Banner/VBox"]
+layout_mode = 2
+unique_name_in_owner = true
+theme_override_font_sizes/font_size = 20
+horizontal_alignment = 1

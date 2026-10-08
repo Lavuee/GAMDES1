@@ -1,0 +1,224 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/levels/level.gd" id="1_scri"]
+[ext_resource type="PackedScene" path="res://scenes/world/jungle_background.tscn" id="2_pack"]
+[ext_resource type="PackedScene" path="res://scenes/world/ground.tscn" id="3_pack"]
+[ext_resource type="PackedScene" path="res://scenes/world/stable_platform.tscn" id="4_pack"]
+[ext_resource type="PackedScene" path="res://scenes/world/disappearing_platform.tscn" id="5_pack"]
+[ext_resource type="PackedScene" path="res://scenes/world/coin.tscn" id="6_pack"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/crocodile.tscn" id="7_pack"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/snake.tscn" id="8_pack"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/bird.tscn" id="9_pack"]
+[ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="10_pack"]
+[ext_resource type="PackedScene" path="res://scenes/world/tutorial_sign.tscn" id="11_pack"]
+
+[node name="Level1" type="Node2D"]
+script = ExtResource("1_scri")
+level_number = 1
+level_title = "The Jungle Path"
+level_width = 3200.0
+ground_y = 480.0
+
+[node name="Background" parent="." instance=ExtResource("2_pack")]
+
+[node name="Ground" parent="." instance=ExtResource("3_pack")]
+position = Vector2(0, 480)
+width = 3200.0
+
+[node name="Signs" type="Node2D" parent="."]
+
+[node name="Sign1" parent="Signs" instance=ExtResource("11_pack")]
+offset_left = 60.0
+offset_top = 150.0
+offset_right = 100.0
+offset_bottom = 180.0
+
+[node name="Label" parent="Signs/Sign1"]
+text = "A / D  move     SPACE  jump"
+
+[node name="Sign2" parent="Signs" instance=ExtResource("11_pack")]
+offset_left = 430.0
+offset_top = 150.0
+offset_right = 470.0
+offset_bottom = 180.0
+
+[node name="Label" parent="Signs/Sign2"]
+text = "High coins = 2 points!"
+
+[node name="Sign3" parent="Signs" instance=ExtResource("11_pack")]
+offset_left = 820.0
+offset_top = 150.0
+offset_right = 860.0
+offset_bottom = 180.0
+
+[node name="Label" parent="Signs/Sign3"]
+text = "J / Click to attack   (each swing uses 1 of 7)"
+
+[node name="Sign4" parent="Signs" instance=ExtResource("11_pack")]
+offset_left = 1360.0
+offset_top = 150.0
+offset_right = 1400.0
+offset_bottom = 180.0
+
+[node name="Label" parent="Signs/Sign4"]
+text = "Blue platforms crumble after 1 second!"
+
+[node name="Sign5" parent="Signs" instance=ExtResource("11_pack")]
+offset_left = 2230.0
+offset_top = 150.0
+offset_right = 2270.0
+offset_bottom = 180.0
+
+[node name="Label" parent="Signs/Sign5"]
+text = "S + SPACE: drop through a platform"
+
+[node name="Platforms" type="Node2D" parent="."]
+
+[node name="Stable1" parent="Platforms" instance=ExtResource("4_pack")]
+position = Vector2(560, 375)
+
+[node name="Stable2" parent="Platforms" instance=ExtResource("4_pack")]
+position = Vector2(740, 270)
+
+[node name="Crumble1" parent="Platforms" instance=ExtResource("5_pack")]
+position = Vector2(1450, 375)
+
+[node name="Crumble2" parent="Platforms" instance=ExtResource("5_pack")]
+position = Vector2(1620, 375)
+
+[node name="Stable3" parent="Platforms" instance=ExtResource("4_pack")]
+position = Vector2(1790, 270)
+
+[node name="Stable4" parent="Platforms" instance=ExtResource("4_pack")]
+position = Vector2(2280, 375)
+
+[node name="Stable5" parent="Platforms" instance=ExtResource("4_pack")]
+position = Vector2(2450, 270)
+
+[node name="Crumble3" parent="Platforms" instance=ExtResource("5_pack")]
+position = Vector2(2620, 270)
+
+[node name="Crumble4" parent="Platforms" instance=ExtResource("5_pack")]
+position = Vector2(2790, 375)
+
+[node name="Coins" type="Node2D" parent="."]
+
+[node name="UpperCoin1" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(542, 351)
+score_value = 2
+
+[node name="UpperCoin2" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(578, 351)
+score_value = 2
+
+[node name="UpperCoin3" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(722, 246)
+score_value = 2
+
+[node name="UpperCoin4" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(758, 246)
+score_value = 2
+
+[node name="UpperCoin5" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(1450, 351)
+score_value = 2
+
+[node name="UpperCoin6" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(1620, 351)
+score_value = 2
+
+[node name="UpperCoin7" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(1772, 246)
+score_value = 2
+
+[node name="UpperCoin8" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(1808, 246)
+score_value = 2
+
+[node name="UpperCoin9" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(2280, 351)
+score_value = 2
+
+[node name="UpperCoin10" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(2432, 246)
+score_value = 2
+
+[node name="UpperCoin11" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(2468, 246)
+score_value = 2
+
+[node name="UpperCoin12" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(2620, 246)
+score_value = 2
+
+[node name="UpperCoin13" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(2790, 351)
+score_value = 2
+
+[node name="GroundCoin14" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(260, 458)
+score_value = 1
+
+[node name="GroundCoin15" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(300, 458)
+score_value = 1
+
+[node name="GroundCoin16" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(340, 458)
+score_value = 1
+
+[node name="GroundCoin17" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(1250, 458)
+score_value = 1
+
+[node name="GroundCoin18" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(1290, 458)
+score_value = 1
+
+[node name="GroundCoin19" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(1330, 458)
+score_value = 1
+
+[node name="GroundCoin20" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(2150, 458)
+score_value = 1
+
+[node name="GroundCoin21" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(2190, 458)
+score_value = 1
+
+[node name="GroundCoin22" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(3000, 458)
+score_value = 1
+
+[node name="GroundCoin23" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(3040, 458)
+score_value = 1
+
+[node name="GroundCoin24" parent="Coins" instance=ExtResource("6_pack")]
+position = Vector2(3080, 458)
+score_value = 1
+
+[node name="Enemies" type="Node2D" parent="."]
+
+[node name="Crocodile1" parent="Enemies" instance=ExtResource("7_pack")]
+position = Vector2(1000, 480)
+patrol_left = -170.0
+patrol_right = 170.0
+
+[node name="Crocodile2" parent="Enemies" instance=ExtResource("7_pack")]
+position = Vector2(1950, 480)
+patrol_left = -220.0
+patrol_right = 200.0
+
+[node name="Crocodile3" parent="Enemies" instance=ExtResource("7_pack")]
+position = Vector2(2720, 480)
+patrol_left = -240.0
+patrol_right = 250.0
+
+[node name="Hazards" type="Node2D" parent="."]
+
+[node name="Player" parent="." instance=ExtResource("10_pack")]
+position = Vector2(110, 480)
+
+[node name="Pickups" type="Node2D" parent="."]

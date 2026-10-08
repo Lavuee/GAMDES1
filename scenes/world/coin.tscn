@@ -1,0 +1,19 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/world/coin.gd" id="1_scri"]
+[ext_resource type="Texture2D" path="res://assets/sprites/abante/coin.png" id="2_text"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_1"]
+radius = 13.0
+
+[node name="Coin" type="Area2D"]
+collision_layer = 64
+collision_mask = 4
+monitorable = false
+script = ExtResource("1_scri")
+
+[node name="Sprite" type="Sprite2D" parent="."]
+texture = ExtResource("2_text")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_1")
