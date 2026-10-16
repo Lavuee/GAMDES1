@@ -5,10 +5,13 @@ extends Node
 signal settings_changed
 
 const SAVE_PATH := "user://settings.cfg"
+## Bumped when a default changes so old saves pick up the new default
+## (v2: the game now starts fullscreen).
+const SETTINGS_VERSION := 2
 const BUSES := ["Master", "Music", "SFX"]
 
 var volumes := {"Master": 0.8, "Music": 0.6, "SFX": 0.8}
-var fullscreen := false
+var fullscreen := true
 
 
 func _ready() -> void:
@@ -64,7 +67,8 @@ func _load() -> void:
 		return
 	for bus_name in BUSES:
 		volumes[bus_name] = clampf(float(config.get_value("audio", bus_name, volumes[bus_name])), 0.0, 1.0)
-	fullscreen = bool(config.get_value("display", "fullscreen", false))
+	if int(config.get_value("meta", "version", 1)) >= SETTINGS_VERSION:
+		fullscreen = bool(config.get_value("display", "fullscreen", true))
 
 
 func _save() -> void:
@@ -72,4 +76,5 @@ func _save() -> void:
 	for bus_name in BUSES:
 		config.set_value("audio", bus_name, volumes[bus_name])
 	config.set_value("display", "fullscreen", fullscreen)
+	config.set_value("meta", "version", SETTINGS_VERSION)
 	config.save(SAVE_PATH)

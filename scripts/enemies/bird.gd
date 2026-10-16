@@ -15,9 +15,12 @@ extends Node2D
 ## Pause at each end of the route, giving the player a readable window.
 @export var turn_pause := 0.5
 @export var sprite_faces_right := true
+## Within this distance of the player the bird shows its swoop animation
+## (visual only; the flight path is unchanged).
+@export var swoop_anim_range := Vector2(150, 110)
 
 @onready var visual: Node2D = $Visual
-@onready var sprite: Sprite2D = $Visual/Sprite
+@onready var sprite: AnimatedSprite2D = $Visual/Sprite
 @onready var damage_area: DamageArea = $DamageArea
 
 var direction := 1
@@ -26,6 +29,11 @@ var _offset_x := 0.0
 var _time := 0.0
 var _pause_timer := 0.0
 var _speed := 100.0
+var _player: Node2D
+var _caw_timer := randf_range(3.0, 7.0)
+
+## The bird is only heard while the player is this close.
+const HEARING_RANGE := 600.0
 
 
 func _ready() -> void:
@@ -52,9 +60,33 @@ func _physics_process(delta: float) -> void:
 			_pause_timer = turn_pause
 	global_position = _origin + Vector2(_offset_x, sin(_time * wave_frequency) * wave_amplitude)
 
-	# Wing flap: quick vertical squash; face flight direction.
-	var flap := sin(_time * 16.0)
-	sprite.scale = Vector2(1.0 + flap * 0.04, 1.0 - flap * 0.12)
+	_update_animation()
 	var flip := direction < 0 if sprite_faces_right else direction > 0
 	visual.scale.x = -1.0 if flip else 1.0
 	visual.rotation = 0.08 * direction if _pause_timer <= 0.0 else 0.0
+
+
+## Flap along the route (a bit slower while hovering at a turn); swoop
+## when the player is close.
+func _update_animation() -> void:
+	if _player == null or not is_instance_valid(_player):
+		_player = get_tree().get_first_node_in_group("player") as Node2D
+	var anim := &"fly"
+	sprite.speed_scale = 0.7 if _pause_timer > 0.0 else 1.0
+	if _player and not _player.get("is_dead"):
+		var d := (_player.global_position + Vector2(0, -30)) - global_position
+		if absf(d.x) < swoop_anim_range.x and absf(d.y) < swoop_anim_range.y:
+			anim = &"attack"
+	if sprite.animation != anim or (anim == &"attack" and not sprite.is_playing()):
+		if anim == &"attack" and sprite.animation != &"attack":
+			_call("bird_screech")
+		sprite.play(anim)
+	_caw_timer -= get_physics_process_delta_time()
+	if _caw_timer <= 0.0:
+		_caw_timer = randf_range(4.0, 9.0)
+		_call("bird_caw")
+
+
+func _call(sound: String) -> void:
+	if _player and _player.global_position.distance_to(global_position) <= HEARING_RANGE:
+		Audio.play(sound, 0.1)

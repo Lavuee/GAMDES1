@@ -3,9 +3,10 @@ extends CharacterBody2D
 ## Side-view platformer hero: run, jump, drop through platforms, swing the
 ## current weapon and take damage from DamageAreas.
 ##
-## The player art is a single frame, so idle / run / jump / fall / attack /
-## hurt "animations" are done procedurally (bob, lean, squash & stretch,
-## weapon swing arc, damage flash).
+## Body animations come from one spritesheet per held weapon (SpriteFrames:
+## idle, walk, run, jump, fall, land, attack, hurt, death), so the hero always
+## visibly holds the current weapon, or nothing when unarmed. Landing squash,
+## the slash arc and the damage flash are layered on procedurally.
 
 @export_group("Movement")
 @export var max_speed := 230.0
@@ -32,14 +33,13 @@ extends CharacterBody2D
 @export var knockback := Vector2(260, -300)
 
 const PLATFORM_LAYER := 2
-const SWING_START_ANGLE := deg_to_rad(-75.0)
-const SWING_END_ANGLE := deg_to_rad(105.0)
-const WEAPON_REST_ANGLE := deg_to_rad(8.0)
+## Body sprite y that puts the frame's feet on the CharacterBody origin.
+const BODY_Y := -38.0
+## Horizontal speed above which the walk cycle switches to the run cycle.
+const RUN_ANIM_SPEED := 150.0
 
 @onready var visual: Node2D = $Visual
-@onready var body_sprite: Sprite2D = $Visual/Body
-@onready var weapon_pivot: Node2D = $Visual/WeaponPivot
-@onready var weapon_sprite: Sprite2D = $Visual/WeaponPivot/Weapon
+@onready var body_sprite: AnimatedSprite2D = $Visual/Body
 @onready var slash: Line2D = $Visual/Slash
 @onready var attack_hitbox: Area2D = $AttackHitbox
 @onready var hurtbox: Area2D = $Hurtbox
@@ -60,6 +60,10 @@ var _shake_strength := 0.0
 var _anim_time := 0.0
 var _was_on_floor := true
 var _landing_squash := 0.0
+## Weapon frames waiting to be applied once the current swing finishes
+## (the 7th swing keeps showing the weapon that broke).
+var _pending_frames: SpriteFrames
+var _land_anim_timer := 0.0
 var _hit_this_swing: Array[Node] = []
 var _attack_damage := 0
 var _hitbox_base_x := 0.0
@@ -101,8 +105,6 @@ func _physics_process(delta: float) -> void:
 
 	if Input.is_action_just_pressed("attack"):
 		_try_attack()
-	if Input.is_action_just_pressed("open_shop"):
-		Game.request_shop()
 
 	move_and_slide()
 	_clamp_to_bounds()
@@ -205,12 +207,12 @@ func _try_attack() -> void:
 	if not Game.is_playing() or _attack_cooldown_timer > 0.0:
 		return
 	if not Game.is_armed():
+		Audio.play("denied")
 		var cheapest := WeaponCatalog.cheapest_cost()
 		if Game.coins >= cheapest:
-			Game.request_shop()
+			Game.toast.emit("UNARMED! Press B to open the shop.")
 		else:
-			Audio.play("denied")
-			Game.toast.emit("UNARMED! Collect %d coins to buy a weapon." % cheapest)
+			Game.toast.emit("UNARMED! Collect %d coins, then press B." % cheapest)
 		return
 	# Capture damage before consuming the use: the 7th swing still hits.
 	var damage := Game.get_weapon_damage()
@@ -223,7 +225,7 @@ func _try_attack() -> void:
 	attack_hitbox.position.x = _hitbox_base_x * facing
 	slash.visible = true
 	slash.modulate.a = 0.9
-	weapon_sprite.visible = true
+	_play_anim(&"attack", true)
 	Audio.play("attack", 0.1)
 
 
@@ -233,8 +235,6 @@ func _update_attack(delta: float) -> void:
 		return
 	_attack_elapsed += delta
 	var t := clampf(_attack_elapsed / attack_duration, 0.0, 1.0)
-	var eased := 1.0 - pow(1.0 - t, 3.0)
-	weapon_pivot.rotation = lerpf(SWING_START_ANGLE, SWING_END_ANGLE, eased)
 	slash.modulate.a = 0.9 * (1.0 - t)
 
 	if _attack_elapsed >= attack_active_start and _attack_elapsed <= attack_active_end:
@@ -248,12 +248,10 @@ func _update_attack(delta: float) -> void:
 	if _attack_elapsed >= attack_duration:
 		_attack_elapsed = -1.0
 		slash.visible = false
-		weapon_pivot.rotation = WEAPON_REST_ANGLE
-		weapon_sprite.visible = Game.is_armed()
 
 
 func _check_damage() -> void:
-	if _invincible_timer > 0.0 or not Game.is_playing() or not hurtbox.monitoring:
+	if _invincible_timer > 0.0 or not Game.is_playing() or not hurtbox.monitoring or Cheats.is_god_mode():
 		return
 	for area in hurtbox.get_overlapping_areas():
 		if area is DamageArea and (area as DamageArea).is_active():
@@ -268,6 +266,7 @@ func _take_damage(source: DamageArea) -> void:
 	if direction == 0.0:
 		direction = -facing
 	velocity = Vector2(direction * knockback.x, knockback.y)
+	_play_anim(&"hurt", true)
 	shake_camera(0.25, 6.0)
 	Audio.play("hurt")
 	# May trigger game over (handled through Game.player_died).
@@ -279,16 +278,29 @@ func shake_camera(duration: float, strength: float) -> void:
 	_shake_strength = strength
 
 
+## Swaps the hero's spritesheet to the one holding the new weapon. During a
+## swing the swap waits until the attack animation ends.
 func _on_weapon_changed(weapon_id: String, _uses: int) -> void:
-	var icon := WeaponCatalog.get_icon(weapon_id)
-	if icon:
-		weapon_sprite.texture = icon
-		# Anchor the handle (bottom-left of the diagonal sword art) on the hand.
-		var size := icon.get_size()
-		weapon_sprite.position = Vector2(size.x * 0.5 - 6.0, -size.y * 0.5 + 6.0)
-	# Keep the weapon visible during the final swing; hide once it finishes.
-	if _attack_elapsed < 0.0:
-		weapon_sprite.visible = weapon_id != WeaponCatalog.UNARMED
+	var frames := WeaponCatalog.get_frames(weapon_id if Game.is_armed() else WeaponCatalog.UNARMED)
+	if frames == body_sprite.sprite_frames:
+		_pending_frames = null
+	elif _is_attack_playing():
+		_pending_frames = frames
+	else:
+		_apply_frames(frames)
+
+
+func _apply_frames(frames: SpriteFrames) -> void:
+	_pending_frames = null
+	var anim := body_sprite.animation
+	var frame := body_sprite.frame
+	body_sprite.sprite_frames = frames
+	body_sprite.play(anim)
+	body_sprite.frame = mini(frame, frames.get_frame_count(anim) - 1)
+
+
+func _is_attack_playing() -> bool:
+	return body_sprite.animation == &"attack" and body_sprite.is_playing()
 
 
 func _on_player_died() -> void:
@@ -296,7 +308,12 @@ func _on_player_died() -> void:
 	slash.visible = false
 	set_collision_mask_value(PLATFORM_LAYER, true)
 	visual.visible = true
-	visual.modulate = Color(1.0, 0.45, 0.45)
+	visual.modulate = Color.WHITE
+	body_sprite.scale = Vector2.ONE
+	body_sprite.position.y = BODY_Y
+	# Game over pauses the tree; keep the death animation playing anyway.
+	body_sprite.process_mode = Node.PROCESS_MODE_ALWAYS
+	_play_anim(&"death", true)
 	shake_camera(0.4, 8.0)
 
 
@@ -308,7 +325,7 @@ func _physics_dead(delta: float) -> void:
 
 
 # ---------------------------------------------------------------------------
-# Procedural animation
+# Animation
 # ---------------------------------------------------------------------------
 
 func _update_visuals(delta: float, input_dir: float) -> void:
@@ -318,29 +335,20 @@ func _update_visuals(delta: float, input_dir: float) -> void:
 	var on_floor := is_on_floor()
 	if on_floor and not _was_on_floor:
 		_landing_squash = 1.0
+		_land_anim_timer = 0.18
 		Audio.play("land", 0.1)
 	_was_on_floor = on_floor
 	_landing_squash = move_toward(_landing_squash, 0.0, delta * 6.0)
+	_land_anim_timer = maxf(_land_anim_timer - delta, 0.0)
 
-	var squash := Vector2.ONE
-	var bob := 0.0
-	var lean := 0.0
-	if not on_floor:
-		# Jump: stretch while rising, slight squash while falling.
-		squash = Vector2(0.92, 1.08) if velocity.y < 0.0 else Vector2(1.04, 0.97)
-	elif absf(velocity.x) > 20.0 and absf(input_dir) > 0.0:
-		# Run: bouncy steps and a lean into the movement.
-		bob = -absf(sin(_anim_time * 14.0)) * 3.0
-		lean = 0.07
-	else:
-		# Idle: gentle breathing.
-		squash = Vector2(1.0, 1.0 + sin(_anim_time * 3.0) * 0.02)
-	squash += Vector2(0.12, -0.12) * _landing_squash
+	if _pending_frames and not _is_attack_playing():
+		_apply_frames(_pending_frames)
+	_play_anim(_pick_animation(on_floor, input_dir))
 
+	# Small landing squash on top of the frames, anchored at the feet.
+	var squash := Vector2.ONE + Vector2(0.08, -0.08) * _landing_squash
 	body_sprite.scale = squash
-	body_sprite.position.y = -29.0 * squash.y + bob
-	body_sprite.rotation = lean
-	weapon_pivot.position.y = -20.0 + bob
+	body_sprite.position.y = BODY_Y * squash.y
 
 	# Damage flash / invincibility blink.
 	if _invincible_timer > 0.0:
@@ -357,3 +365,27 @@ func _update_visuals(delta: float, input_dir: float) -> void:
 		camera.offset = Vector2(randf_range(-1, 1), randf_range(-1, 1)) * _shake_strength
 	else:
 		camera.offset = Vector2.ZERO
+
+
+func _pick_animation(on_floor: bool, input_dir: float) -> StringName:
+	# The swing animation runs a little longer than the hit window; let it finish.
+	if _attack_elapsed >= 0.0 or _is_attack_playing():
+		return &"attack"
+	if _hurt_stun_timer > 0.0:
+		return &"hurt"
+	if not on_floor:
+		return &"jump" if velocity.y < 0.0 else &"fall"
+	var speed := absf(velocity.x)
+	if speed > 20.0 and absf(input_dir) > 0.0:
+		return &"run" if speed > RUN_ANIM_SPEED else &"walk"
+	if _land_anim_timer > 0.0:
+		return &"land"
+	return &"idle"
+
+
+## Changes animation only when it differs, so loops keep their phase;
+## `restart` replays one-shots (attack, hurt) from the first frame.
+func _play_anim(anim: StringName, restart := false) -> void:
+	if restart or body_sprite.animation != anim:
+		body_sprite.play(anim)
+		body_sprite.frame = 0

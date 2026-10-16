@@ -1,8 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/player/player.gd" id="1_scri"]
-[ext_resource type="Texture2D" path="res://assets/sprites/abante/player.png" id="2_text"]
-[ext_resource type="Texture2D" path="res://assets/sprites/abante/weapon_default.png" id="3_text"]
+[ext_resource type="SpriteFrames" path="res://assets/sprites/abante/frames/player_dagger_frames.tres" id="2_text"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
 size = Vector2(22, 50)
@@ -29,17 +28,11 @@ shape = SubResource("RectangleShape2D_1")
 
 [node name="Visual" type="Node2D" parent="."]
 
-[node name="Body" type="Sprite2D" parent="Visual"]
-position = Vector2(0, -29)
-texture = ExtResource("2_text")
-
-[node name="WeaponPivot" type="Node2D" parent="Visual"]
-position = Vector2(10, -20)
-rotation = 0.14
-
-[node name="Weapon" type="Sprite2D" parent="Visual/WeaponPivot"]
-position = Vector2(9, -11.5)
-texture = ExtResource("3_text")
+[node name="Body" type="AnimatedSprite2D" parent="Visual"]
+position = Vector2(1, -38)
+sprite_frames = ExtResource("2_text")
+animation = &"idle"
+autoplay = "idle"
 
 [node name="Slash" type="Line2D" parent="Visual"]
 points = PackedVector2Array(20.4, -58.6, 30.0, -54.6, 38.3, -48.3, 44.6, -40.0, 48.6, -30.4, 50.0, -20.0, 48.6, -9.6, 44.6, -0.0, 38.3, 8.3, 30.0, 14.6, 20.4, 18.6, 10.0, 20.0, -0.4, 18.6)

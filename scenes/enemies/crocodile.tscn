@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/enemies/ground_enemy.gd" id="1_scri"]
 [ext_resource type="Script" path="res://scripts/enemies/damage_area.gd" id="2_scri"]
-[ext_resource type="Texture2D" path="res://assets/sprites/abante/crocodile.png" id="3_text"]
+[ext_resource type="SpriteFrames" path="res://assets/sprites/abante/frames/crocodile_frames.tres" id="3_text"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
 size = Vector2(70, 34)
@@ -23,6 +23,7 @@ speed_by_level = Array[float]([55.0, 80.0, 105.0])
 chase_multiplier = 1.35
 aggro_range = 230.0
 sprite_faces_right = true
+voice = "croc"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, -17)
@@ -30,9 +31,11 @@ shape = SubResource("RectangleShape2D_1")
 
 [node name="Visual" type="Node2D" parent="."]
 
-[node name="Sprite" type="Sprite2D" parent="Visual"]
-position = Vector2(0, -26)
-texture = ExtResource("3_text")
+[node name="Sprite" type="AnimatedSprite2D" parent="Visual"]
+position = Vector2(1, -37)
+sprite_frames = ExtResource("3_text")
+animation = &"idle"
+autoplay = "idle"
 
 [node name="Hurtbox" type="Area2D" parent="."]
 collision_layer = 32

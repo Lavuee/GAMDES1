@@ -35,6 +35,6 @@ func _process(delta: float) -> void:
 	background.position.x = -overflow * (0.5 + 0.5 * sin(_time * 0.08))
 	title.position.y = sin(_time * 1.6) * 4.0
 	for child in parade.get_children():
-		if child is Sprite2D:
+		if child is Node2D:
 			var phase: float = child.get_meta("phase", 0.0)
 			child.position.y = child.get_meta("base_y") - absf(sin(_time * 5.0 + phase)) * 3.0

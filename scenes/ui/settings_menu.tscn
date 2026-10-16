@@ -116,102 +116,181 @@ text = "FULLSCREEN"
 [node name="Sep" type="HSeparator" parent="Center/Panel/VBox"]
 layout_mode = 2
 
-[node name="ControlsTitle" type="Label" parent="Center/Panel/VBox"]
+[node name="Info" type="HBoxContainer" parent="Center/Panel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 36
+
+[node name="ControlsCol" type="VBoxContainer" parent="Center/Panel/VBox/Info"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="ControlsTitle" type="Label" parent="Center/Panel/VBox/Info/ControlsCol"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.84, 0.36, 1)
 theme_override_font_sizes/font_size = 20
 text = "CONTROLS"
 horizontal_alignment = 1
 
-[node name="Controls" type="GridContainer" parent="Center/Panel/VBox"]
+[node name="Controls" type="GridContainer" parent="Center/Panel/VBox/Info/ControlsCol"]
 layout_mode = 2
 theme_override_constants/h_separation = 24
 theme_override_constants/v_separation = 2
 columns = 2
 
-[node name="Key0" type="Label" parent="Center/Panel/VBox/Controls"]
+[node name="Key0" type="Label" parent="Center/Panel/VBox/Info/ControlsCol/Controls"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.9, 0.6, 1)
 theme_override_font_sizes/font_size = 15
 text = "A  /  LEFT ARROW"
 
-[node name="Desc0" type="Label" parent="Center/Panel/VBox/Controls"]
+[node name="Desc0" type="Label" parent="Center/Panel/VBox/Info/ControlsCol/Controls"]
 layout_mode = 2
 theme_type_variation = &"SmallLabel"
 theme_override_font_sizes/font_size = 15
 text = "Move left"
 
-[node name="Key1" type="Label" parent="Center/Panel/VBox/Controls"]
+[node name="Key1" type="Label" parent="Center/Panel/VBox/Info/ControlsCol/Controls"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.9, 0.6, 1)
 theme_override_font_sizes/font_size = 15
 text = "D  /  RIGHT ARROW"
 
-[node name="Desc1" type="Label" parent="Center/Panel/VBox/Controls"]
+[node name="Desc1" type="Label" parent="Center/Panel/VBox/Info/ControlsCol/Controls"]
 layout_mode = 2
 theme_type_variation = &"SmallLabel"
 theme_override_font_sizes/font_size = 15
 text = "Move right"
 
-[node name="Key2" type="Label" parent="Center/Panel/VBox/Controls"]
+[node name="Key2" type="Label" parent="Center/Panel/VBox/Info/ControlsCol/Controls"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.9, 0.6, 1)
 theme_override_font_sizes/font_size = 15
 text = "SPACE  /  W  /  UP"
 
-[node name="Desc2" type="Label" parent="Center/Panel/VBox/Controls"]
+[node name="Desc2" type="Label" parent="Center/Panel/VBox/Info/ControlsCol/Controls"]
 layout_mode = 2
 theme_type_variation = &"SmallLabel"
 theme_override_font_sizes/font_size = 15
 text = "Jump (hold for higher)"
 
-[node name="Key3" type="Label" parent="Center/Panel/VBox/Controls"]
+[node name="Key3" type="Label" parent="Center/Panel/VBox/Info/ControlsCol/Controls"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.9, 0.6, 1)
 theme_override_font_sizes/font_size = 15
 text = "J  /  K  /  LEFT CLICK"
 
-[node name="Desc3" type="Label" parent="Center/Panel/VBox/Controls"]
+[node name="Desc3" type="Label" parent="Center/Panel/VBox/Info/ControlsCol/Controls"]
 layout_mode = 2
 theme_type_variation = &"SmallLabel"
 theme_override_font_sizes/font_size = 15
 text = "Attack (uses 1 weapon use)"
 
-[node name="Key4" type="Label" parent="Center/Panel/VBox/Controls"]
+[node name="Key4" type="Label" parent="Center/Panel/VBox/Info/ControlsCol/Controls"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.9, 0.6, 1)
 theme_override_font_sizes/font_size = 15
 text = "S  +  SPACE"
 
-[node name="Desc4" type="Label" parent="Center/Panel/VBox/Controls"]
+[node name="Desc4" type="Label" parent="Center/Panel/VBox/Info/ControlsCol/Controls"]
 layout_mode = 2
 theme_type_variation = &"SmallLabel"
 theme_override_font_sizes/font_size = 15
 text = "Drop through a platform"
 
-[node name="Key5" type="Label" parent="Center/Panel/VBox/Controls"]
+[node name="Key5" type="Label" parent="Center/Panel/VBox/Info/ControlsCol/Controls"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.9, 0.6, 1)
 theme_override_font_sizes/font_size = 15
 text = "B"
 
-[node name="Desc5" type="Label" parent="Center/Panel/VBox/Controls"]
+[node name="Desc5" type="Label" parent="Center/Panel/VBox/Info/ControlsCol/Controls"]
 layout_mode = 2
 theme_type_variation = &"SmallLabel"
 theme_override_font_sizes/font_size = 15
-text = "Open weapon shop when unarmed"
+text = "Open / close the weapon shop (anytime)"
 
-[node name="Key6" type="Label" parent="Center/Panel/VBox/Controls"]
+[node name="Key6" type="Label" parent="Center/Panel/VBox/Info/ControlsCol/Controls"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.9, 0.6, 1)
 theme_override_font_sizes/font_size = 15
 text = "ESC  /  P"
 
-[node name="Desc6" type="Label" parent="Center/Panel/VBox/Controls"]
+[node name="Desc6" type="Label" parent="Center/Panel/VBox/Info/ControlsCol/Controls"]
 layout_mode = 2
 theme_type_variation = &"SmallLabel"
 theme_override_font_sizes/font_size = 15
 text = "Pause"
+
+[node name="TipsCol" type="VBoxContainer" parent="Center/Panel/VBox/Info"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="TipsTitle" type="Label" parent="Center/Panel/VBox/Info/TipsCol"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.84, 0.36, 1)
+theme_override_font_sizes/font_size = 20
+text = "TIPS"
+horizontal_alignment = 1
+
+[node name="Tips" type="VBoxContainer" parent="Center/Panel/VBox/Info/TipsCol"]
+layout_mode = 2
+theme_override_constants/separation = 3
+
+[node name="Tip0" type="Label" parent="Center/Panel/VBox/Info/TipsCol/Tips"]
+layout_mode = 2
+custom_minimum_size = Vector2(410, 0)
+theme_type_variation = &"SmallLabel"
+theme_override_font_sizes/font_size = 14
+text = "• Each weapon has 7 swings. Press B anytime to buy a new one; it replaces your current weapon (leftover swings are lost)."
+autowrap_mode = 3
+
+[node name="Tip1" type="Label" parent="Center/Panel/VBox/Info/TipsCol/Tips"]
+layout_mode = 2
+custom_minimum_size = Vector2(410, 0)
+theme_type_variation = &"SmallLabel"
+theme_override_font_sizes/font_size = 14
+text = "• High coins are worth 2 points!"
+autowrap_mode = 3
+
+[node name="Tip2" type="Label" parent="Center/Panel/VBox/Info/TipsCol/Tips"]
+layout_mode = 2
+custom_minimum_size = Vector2(410, 0)
+theme_type_variation = &"SmallLabel"
+theme_override_font_sizes/font_size = 14
+text = "• Blue platforms crumble 1 second after you land."
+autowrap_mode = 3
+
+[node name="Tip3" type="Label" parent="Center/Panel/VBox/Info/TipsCol/Tips"]
+layout_mode = 2
+custom_minimum_size = Vector2(410, 0)
+theme_type_variation = &"SmallLabel"
+theme_override_font_sizes/font_size = 14
+text = "• Crocodiles bite for 1.5 hearts."
+autowrap_mode = 3
+
+[node name="Tip4" type="Label" parent="Center/Panel/VBox/Info/TipsCol/Tips"]
+layout_mode = 2
+custom_minimum_size = Vector2(410, 0)
+theme_type_variation = &"SmallLabel"
+theme_override_font_sizes/font_size = 14
+text = "• Snakes lunge and bite hard (3 hearts). Use platforms!"
+autowrap_mode = 3
+
+[node name="Tip5" type="Label" parent="Center/Panel/VBox/Info/TipsCol/Tips"]
+layout_mode = 2
+custom_minimum_size = Vector2(410, 0)
+theme_type_variation = &"SmallLabel"
+theme_override_font_sizes/font_size = 14
+text = "• Birds can't be hurt. Avoid them! (5 hearts)"
+autowrap_mode = 3
+
+[node name="Tip6" type="Label" parent="Center/Panel/VBox/Info/TipsCol/Tips"]
+layout_mode = 2
+custom_minimum_size = Vector2(410, 0)
+theme_type_variation = &"SmallLabel"
+theme_override_font_sizes/font_size = 14
+text = "• Hearts above an enemy show how much life it has left."
+autowrap_mode = 3
 
 [node name="BackButton" type="Button" parent="Center/Panel/VBox"]
 layout_mode = 2

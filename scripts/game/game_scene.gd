@@ -25,6 +25,7 @@ func _ready() -> void:
 
 	Game.level_cleared.connect(_on_level_cleared)
 	Game.shop_requested.connect(_on_shop_requested)
+	Game.weapon_broken.connect(_on_weapon_broken)
 	Game.player_died.connect(_on_player_died)
 	pause_menu.resume_requested.connect(_resume)
 	pause_menu.settings_requested.connect(_open_settings)
@@ -37,6 +38,12 @@ func _ready() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	# B opens the shop. Handled as an event (not polled by the player) so the
+	# open shop consumes the same key to close itself without reopening.
+	if event.is_action_pressed("open_shop") and Game.state == Game.State.PLAYING:
+		get_viewport().set_input_as_handled()
+		Game.request_shop()
+		return
 	if not event.is_action_pressed("pause"):
 		return
 	match Game.state:
@@ -91,19 +98,26 @@ func _on_settings_closed() -> void:
 # Weapon shop
 # ---------------------------------------------------------------------------
 
-func _on_shop_requested(from_weapon_break: bool) -> void:
+func _on_shop_requested() -> void:
 	if Game.state != Game.State.PLAYING:
 		return
 	Game.set_state(Game.State.WEAPON_SHOP)
-	weapon_shop.open(from_weapon_break)
+	weapon_shop.open()
+
+
+## The shop no longer pops up; just tell the player how to get a new weapon.
+func _on_weapon_broken() -> void:
+	Audio.play("weapon_break")
+	hud.show_toast("WEAPON BROKEN!  Press B to open the shop", Color(1.0, 0.7, 0.5))
 
 
 func _on_shop_closed(purchased_weapon_id: String) -> void:
 	if Game.state == Game.State.WEAPON_SHOP:
 		Game.set_state(Game.State.PLAYING)
 	if purchased_weapon_id != WeaponCatalog.UNARMED:
-		hud.show_toast("EQUIPPED %s!  7 USES" % WeaponCatalog.get_display_name(purchased_weapon_id), Color(0.6, 1.0, 0.6))
-	else:
+		var uses: int = WeaponCatalog.get_info(purchased_weapon_id).uses
+		hud.show_toast("EQUIPPED %s!  %d USES" % [WeaponCatalog.get_display_name(purchased_weapon_id), uses], Color(0.6, 1.0, 0.6))
+	elif not Game.is_armed():
 		hud.show_toast("UNARMED - collect coins and press B", Color(1.0, 0.7, 0.5))
 
 
@@ -140,7 +154,7 @@ func _on_level_cleared(level_number: int) -> void:
 func _on_player_died() -> void:
 	Audio.stop_music()
 	Audio.play("game_over")
-	hud.show_toast("YOU FELL...", Color(1.0, 0.4, 0.35))
+	hud.show_toast("YOU DIED...", Color(1.0, 0.4, 0.35))
 	await get_tree().create_timer(GAME_OVER_DELAY, true).timeout
 	pause_menu.close()
 	weapon_shop.visible = false

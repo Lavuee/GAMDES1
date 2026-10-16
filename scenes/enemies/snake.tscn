@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/enemies/snake.gd" id="1_scri"]
 [ext_resource type="Script" path="res://scripts/enemies/damage_area.gd" id="2_scri"]
-[ext_resource type="Texture2D" path="res://assets/sprites/abante/snake.png" id="3_text"]
+[ext_resource type="SpriteFrames" path="res://assets/sprites/abante/frames/snake_frames.tres" id="3_text"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
 size = Vector2(34, 40)
@@ -24,6 +24,7 @@ chase_multiplier = 1.25
 aggro_range = 220.0
 lunge_enabled = true
 sprite_faces_right = false
+voice = "snake"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, -20)
@@ -31,9 +32,11 @@ shape = SubResource("RectangleShape2D_1")
 
 [node name="Visual" type="Node2D" parent="."]
 
-[node name="Sprite" type="Sprite2D" parent="Visual"]
-position = Vector2(0, -26.5)
-texture = ExtResource("3_text")
+[node name="Sprite" type="AnimatedSprite2D" parent="Visual"]
+position = Vector2(0, -37)
+sprite_frames = ExtResource("3_text")
+animation = &"idle"
+autoplay = "idle"
 
 [node name="Hurtbox" type="Area2D" parent="."]
 collision_layer = 32

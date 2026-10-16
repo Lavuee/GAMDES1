@@ -16,7 +16,7 @@ signal score_changed(score: int)
 signal score_popup(amount: int, world_position: Vector2)
 signal weapon_changed(weapon_id: String, uses: int)
 signal weapon_broken
-signal shop_requested(from_weapon_break: bool)
+signal shop_requested
 signal level_started(level_number: int)
 signal enemies_remaining_changed(remaining: int, total: int)
 signal level_cleared(level_number: int)
@@ -37,7 +37,8 @@ const STARTING_COINS := 0
 const SURVIVAL_INTERVAL := 5.0
 const SURVIVAL_POINTS := 5
 const LEVEL_CLEAR_BONUS := 50
-## Small delay after the 7th swing so the final hit lands before the shop opens.
+## Small delay after the 7th swing so the final hit lands before the
+## "weapon broken" feedback.
 const WEAPON_BREAK_DELAY := 0.3
 
 var state: State = State.MAIN_MENU
@@ -199,6 +200,8 @@ func _set_paused(value: bool) -> void:
 func damage_player(amount_half_hearts: int) -> void:
 	if state != State.PLAYING or amount_half_hearts <= 0:
 		return
+	if Cheats.is_god_mode():
+		return
 	half_hearts = maxi(half_hearts - amount_half_hearts, 0)
 	player_damaged.emit(amount_half_hearts)
 	health_changed.emit(half_hearts, MAX_HALF_HEARTS)
@@ -246,7 +249,11 @@ func is_armed() -> bool:
 
 
 func get_weapon_damage() -> int:
-	return WeaponCatalog.get_damage(weapon_id) if is_armed() else 0
+	if not is_armed():
+		return 0
+	if Cheats.is_one_hit():
+		return WeaponCatalog.ENEMY_MAX_HEALTH
+	return WeaponCatalog.get_damage(weapon_id)
 
 
 func can_afford(weapon_id_to_check: String) -> bool:
@@ -277,26 +284,23 @@ func _break_weapon() -> void:
 	weapon_id = WeaponCatalog.UNARMED
 	weapon_uses = 0
 	weapon_changed.emit(weapon_id, weapon_uses)
-	# Timer respects pause, so the shop never opens over another menu.
+	# The shop never pops up by itself: the player opens it with B.
 	var timer := get_tree().create_timer(WEAPON_BREAK_DELAY, false)
 	timer.timeout.connect(func() -> void:
 		if state == State.PLAYING:
 			weapon_broken.emit()
-			shop_requested.emit(true)
 	)
 
 
-## Player asked to open the shop while unarmed (B key / attack with no weapon).
+## Player pressed the shop key (B). Works any time during play, armed or not.
 func request_shop() -> void:
 	if state != State.PLAYING:
 		return
-	if is_armed():
-		toast.emit("You already have a weapon (%d uses left)." % weapon_uses)
-		return
-	shop_requested.emit(false)
+	shop_requested.emit()
 
 
-## Attempts to buy a weapon. Returns true on success.
+## Attempts to buy a weapon. Returns true on success. The new weapon replaces
+## the current one; any uses left on the old weapon are lost.
 func buy_weapon(id: String) -> bool:
 	if not WeaponCatalog.has_weapon(id):
 		push_warning("buy_weapon: unknown weapon '%s'" % id)

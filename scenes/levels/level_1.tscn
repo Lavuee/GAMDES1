@@ -10,7 +10,6 @@
 [ext_resource type="PackedScene" path="res://scenes/enemies/snake.tscn" id="8_pack"]
 [ext_resource type="PackedScene" path="res://scenes/enemies/bird.tscn" id="9_pack"]
 [ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="10_pack"]
-[ext_resource type="PackedScene" path="res://scenes/world/tutorial_sign.tscn" id="11_pack"]
 
 [node name="Level1" type="Node2D"]
 script = ExtResource("1_scri")
@@ -24,53 +23,6 @@ ground_y = 480.0
 [node name="Ground" parent="." instance=ExtResource("3_pack")]
 position = Vector2(0, 480)
 width = 3200.0
-
-[node name="Signs" type="Node2D" parent="."]
-
-[node name="Sign1" parent="Signs" instance=ExtResource("11_pack")]
-offset_left = 60.0
-offset_top = 150.0
-offset_right = 100.0
-offset_bottom = 180.0
-
-[node name="Label" parent="Signs/Sign1"]
-text = "A / D  move     SPACE  jump"
-
-[node name="Sign2" parent="Signs" instance=ExtResource("11_pack")]
-offset_left = 430.0
-offset_top = 150.0
-offset_right = 470.0
-offset_bottom = 180.0
-
-[node name="Label" parent="Signs/Sign2"]
-text = "High coins = 2 points!"
-
-[node name="Sign3" parent="Signs" instance=ExtResource("11_pack")]
-offset_left = 820.0
-offset_top = 150.0
-offset_right = 860.0
-offset_bottom = 180.0
-
-[node name="Label" parent="Signs/Sign3"]
-text = "J / Click to attack   (each swing uses 1 of 7)"
-
-[node name="Sign4" parent="Signs" instance=ExtResource("11_pack")]
-offset_left = 1360.0
-offset_top = 150.0
-offset_right = 1400.0
-offset_bottom = 180.0
-
-[node name="Label" parent="Signs/Sign4"]
-text = "Blue platforms crumble after 1 second!"
-
-[node name="Sign5" parent="Signs" instance=ExtResource("11_pack")]
-offset_left = 2230.0
-offset_top = 150.0
-offset_right = 2270.0
-offset_bottom = 180.0
-
-[node name="Label" parent="Signs/Sign5"]
-text = "S + SPACE: drop through a platform"
 
 [node name="Platforms" type="Node2D" parent="."]
 

@@ -29,13 +29,22 @@ signal defeated(enemy: GroundEnemy)
 @export var lunge_range := 120.0
 ## Art faces right when true; flip handled automatically.
 @export var sprite_faces_right := true
+## Where the health hearts float, relative to the enemy's feet.
+@export var hearts_offset := Vector2(0, -64)
+## Sound prefix: plays "<voice>_idle / _alert / _attack / _hurt / _die"
+## from the Audio library ("croc", "snake"). Empty = generic sounds only.
+@export var voice := ""
 
 const HIT_STUN_TIME := 0.22
 const HIT_KNOCKBACK := 170.0
 const CHASE_DEADZONE := 10.0
+## Distance at which the (purely visual) attack animation plays.
+const ATTACK_ANIM_RANGE := 60.0
+## Enemies further than this from the player stay quiet.
+const HEARING_RANGE := 520.0
 
 @onready var visual: Node2D = $Visual
-@onready var sprite: Sprite2D = $Visual/Sprite
+@onready var sprite: AnimatedSprite2D = $Visual/Sprite
 @onready var hurtbox: Area2D = $Hurtbox
 @onready var damage_area: DamageArea = $DamageArea
 @onready var body_shape: CollisionShape2D = $CollisionShape2D
@@ -51,7 +60,12 @@ var _lunge_timer := 0.0
 var _lunge_cooldown_timer := 0.0
 var _anim_time := 0.0
 var _flash := 0.0
+var _chasing := false
+var _was_chasing := false
+var _idle_call_timer := 0.0
+var _alert_cooldown := 0.0
 var _player: Node2D
+var _hearts: EnemyHealthHearts
 
 
 func _ready() -> void:
@@ -61,6 +75,11 @@ func _ready() -> void:
 	damage_area.damage_half_hearts = damage_half_hearts
 	_anim_time = randf() * 10.0
 	_lunge_cooldown_timer = randf_range(0.3, lunge_cooldown)
+	_idle_call_timer = randf_range(2.0, 6.0)
+	_hearts = EnemyHealthHearts.new()
+	_hearts.position = hearts_offset
+	add_child(_hearts)
+	_hearts.set_health(health, WeaponCatalog.ENEMY_MAX_HEALTH)
 
 
 func _speed_for_level(level: int) -> float:
@@ -87,6 +106,7 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 	if is_on_wall() and _stun_timer <= 0.0:
 		direction = -direction
+	_update_voice(delta)
 	_update_visuals(delta)
 
 
@@ -102,11 +122,13 @@ func _choose_horizontal_velocity(delta: float) -> float:
 		return direction * _speed * lunge_speed_multiplier
 
 	var chasing := false
+	_chasing = false
 	if _player_is_targetable():
 		var dx := _player.global_position.x - global_position.x
 		# Only chase inside the patrol zone so enemies don't bunch up.
 		if absf(dx) < aggro_range and _player.global_position.x > left_limit - 40.0 and _player.global_position.x < right_limit + 40.0:
 			chasing = true
+			_chasing = true
 			if absf(dx) > CHASE_DEADZONE:
 				direction = 1 if dx > 0.0 else -1
 			else:
@@ -153,9 +175,14 @@ func take_hit(damage: int, source_x: float) -> void:
 	_lunge_timer = 0.0
 	var push := signf(global_position.x - source_x)
 	velocity.x = (push if push != 0.0 else 1.0) * HIT_KNOCKBACK
+	_play_anim(&"hurt", true)
+	_hearts.set_health(health, WeaponCatalog.ENEMY_MAX_HEALTH)
+	_hearts.pulse()
 	Audio.play("hit", 0.08)
 	if health == 0:
 		_die()
+	else:
+		_say("hurt")
 
 
 func _die() -> void:
@@ -166,41 +193,78 @@ func _die() -> void:
 	hurtbox.set_deferred("monitorable", false)
 	body_shape.set_deferred("disabled", true)
 	Audio.play("enemy_die")
+	_say("die", true)
+	_hearts.fade_out()
 	defeated.emit(self)
-	# Death animation: pop up, flip over and fade out.
-	var tween := create_tween().set_parallel(true)
-	tween.tween_property(visual, "position:y", visual.position.y - 18.0, 0.18).set_ease(Tween.EASE_OUT)
-	tween.tween_property(visual, "rotation", PI * 0.5 * -direction, 0.4)
-	tween.tween_property(visual, "modulate", Color(1, 1, 1, 0), 0.45).set_delay(0.1)
-	tween.chain().tween_callback(queue_free)
+	# Death animation from the spritesheet. Keep it running if the last kill
+	# pauses the tree for the level transition.
+	_flash = 0.0
+	visual.modulate = Color.WHITE
+	sprite.process_mode = Node.PROCESS_MODE_ALWAYS
+	_play_anim(&"death", true)
+	sprite.animation_finished.connect(queue_free, CONNECT_ONE_SHOT)
 
 
 # ---------------------------------------------------------------------------
-# Procedural animation
+# Animation
 # ---------------------------------------------------------------------------
 
 func _update_visuals(delta: float) -> void:
 	_anim_time += delta
-	var moving := absf(velocity.x) > 5.0
 	var flip := direction < 0 if sprite_faces_right else direction > 0
 	visual.scale.x = -1.0 if flip else 1.0
-	var speed_factor := clampf(absf(velocity.x) / 60.0, 0.5, 3.0)
-	if moving:
-		_animate_walk(speed_factor)
-	else:
-		sprite.position.y = _sprite_base_y()
-		sprite.scale = Vector2(1.0, 1.0 + sin(_anim_time * 2.5) * 0.015)
+	_play_anim(_pick_animation())
+	# Faster gaits play their cycle a bit quicker (level speed scaling).
+	sprite.speed_scale = clampf(absf(velocity.x) / _speed, 0.8, 1.6) if sprite.animation in [&"walk", &"chase"] else 1.0
 
 	_flash = move_toward(_flash, 0.0, delta * 5.0)
 	visual.modulate = Color(1, 1, 1).lerp(Color(4, 4, 4), _flash) if _flash > 0.0 else Color.WHITE
 
 
-## Override in subclasses for a different gait.
-func _animate_walk(speed_factor: float) -> void:
-	sprite.position.y = _sprite_base_y() - absf(sin(_anim_time * 9.0 * speed_factor)) * 2.0
-	sprite.rotation = sin(_anim_time * 9.0 * speed_factor) * 0.03
-	sprite.scale = Vector2.ONE
+func _pick_animation() -> StringName:
+	if _stun_timer > 0.0:
+		return &"hurt"
+	if _lunge_timer > 0.0 or (_chasing and _player and absf(_player.global_position.x - global_position.x) < ATTACK_ANIM_RANGE):
+		return &"attack"
+	if absf(velocity.x) > 5.0:
+		return &"chase" if _chasing else &"walk"
+	return &"idle"
 
 
-func _sprite_base_y() -> float:
-	return -sprite.texture.get_height() * 0.5 if sprite.texture else 0.0
+## Changes animation only when it differs; `restart` replays a one-shot.
+## A finished bite repeats while the player stays in range.
+func _play_anim(anim: StringName, restart := false) -> void:
+	if restart or sprite.animation != anim or (anim == &"attack" and not sprite.is_playing()):
+		sprite.play(anim)
+		sprite.frame = 0
+		if anim == &"attack":
+			_say("attack")
+
+
+# ---------------------------------------------------------------------------
+# Voice
+# ---------------------------------------------------------------------------
+
+## Growl / hiss when the enemy spots the player, plus an occasional idle call
+## while the player is within earshot.
+func _update_voice(delta: float) -> void:
+	_alert_cooldown = maxf(_alert_cooldown - delta, 0.0)
+	if _chasing and not _was_chasing and _alert_cooldown <= 0.0:
+		_say("alert")
+		_alert_cooldown = 3.0
+	_was_chasing = _chasing
+	_idle_call_timer -= delta
+	if _idle_call_timer <= 0.0:
+		_idle_call_timer = randf_range(4.0, 8.0)
+		if not _chasing:
+			_say("idle")
+
+
+## Plays "<voice>_<what>" if the player can hear this enemy. `always` skips
+## the distance check (death cries).
+func _say(what: String, always := false) -> void:
+	if voice.is_empty():
+		return
+	if not always and (_player == null or _player.global_position.distance_to(global_position) > HEARING_RANGE):
+		return
+	Audio.play("%s_%s" % [voice, what], 0.08)

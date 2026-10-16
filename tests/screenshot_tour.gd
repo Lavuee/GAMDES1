@@ -59,9 +59,8 @@ func _tour() -> void:
 	await _shot("06_level1_attack_crumble")
 
 	Game.coins = 12
-	Game.weapon_uses = 1
-	Game.consume_weapon_use()
-	await _wait(0.7)
+	Game.request_shop()
+	await _wait(0.4)
 	await _shot("07_weapon_shop")
 	game.get_node("UI/WeaponShop")._on_buy_pressed("weapon_2")
 	await _wait(0.3)

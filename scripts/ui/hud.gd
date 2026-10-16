@@ -22,7 +22,6 @@ const USE_PIP_OFF := Color(0.25, 0.27, 0.3)
 @onready var weapon_hint: Label = %WeaponHint
 @onready var toast_label: Label = %Toast
 @onready var damage_flash: ColorRect = %DamageFlash
-@onready var controls_hint: Label = %ControlsHint
 
 var _heart_slots: Array[TextureRect] = []
 var _toast_tween: Tween
@@ -44,17 +43,13 @@ func _ready() -> void:
 	Game.level_started.connect(_on_level_started)
 	Game.enemies_remaining_changed.connect(_on_enemies_changed)
 	Game.toast.connect(show_toast)
+	Cheats.cheat_toggled.connect(func(_on: bool) -> void: _on_health_changed(Game.half_hearts, Game.MAX_HALF_HEARTS))
 
 	_on_health_changed(Game.half_hearts, Game.MAX_HALF_HEARTS)
 	_on_coins_changed(Game.coins)
 	_on_score_changed(Game.score)
 	_on_weapon_changed(Game.weapon_id, Game.weapon_uses)
 	_on_level_started(Game.current_level)
-
-	# Controls reminder fades away after a few seconds.
-	var tween := create_tween()
-	tween.tween_interval(9.0)
-	tween.tween_property(controls_hint, "modulate:a", 0.0, 1.5)
 
 
 func _process(_delta: float) -> void:
@@ -90,6 +85,8 @@ func _on_health_changed(half_hearts: int, max_half_hearts: int) -> void:
 			slot.texture = HEART_FULL
 			slot.modulate = EMPTY_HEART_COLOR
 	hearts_label.text = "HEARTS  %s / %d" % [Game.format_hearts(half_hearts), max_half_hearts / 2]
+	if Cheats.enabled:
+		hearts_label.text += "   [CHEAT]"
 
 
 
@@ -147,7 +144,7 @@ func _refresh_weapon_hint() -> void:
 		weapon_hint.text = "Press B to buy a weapon!"
 		weapon_hint.modulate = Color(0.6, 1.0, 0.6)
 	else:
-		weapon_hint.text = "Collect %d more coins to buy a weapon" % (cheapest - Game.coins)
+		weapon_hint.text = "Collect %d more coins, then press B" % (cheapest - Game.coins)
 		weapon_hint.modulate = Color(1.0, 0.75, 0.5)
 
 

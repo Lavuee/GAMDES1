@@ -37,6 +37,7 @@ func _run_all() -> void:
 	await _test_disappearing_platform()
 	await _test_full_game_loop()
 	await _test_game_over_and_restart_state()
+	_test_konami_cheat()
 
 
 func _test_run_reset() -> void:
@@ -246,6 +247,18 @@ func _test_disappearing_platform() -> void:
 	platform.queue_free()
 
 
+## Sends a real key event (pressed, then released) through the input
+## pipeline, for actions handled in _unhandled_input.
+func _key_event(action: String) -> void:
+	for pressed in [true, false]:
+		var ev := InputEventAction.new()
+		ev.action = action
+		ev.pressed = pressed
+		Input.parse_input_event(ev)
+		await get_tree().process_frame
+		await get_tree().process_frame
+
+
 func _press(action: String, frames: int) -> void:
 	Input.action_press(action)
 	for i in frames:
@@ -314,13 +327,25 @@ func _test_full_game_loop() -> void:
 	check(level.get_node("Pickups").get_child_count() > 0, "defeated enemy drops a coin")
 	player.hurtbox.monitoring = true
 
-	# Weapon shop opens and freezes the world when the weapon breaks.
+	# A breaking weapon no longer pops up the shop.
 	Game.weapon_id = "weapon_1"
 	Game.weapon_uses = 1
+	Game.weapon_changed.emit(Game.weapon_id, Game.weapon_uses)
 	await _press("attack", 2)
 	await get_tree().create_timer(0.6).timeout
 	var shop: Control = game.get_node("UI/WeaponShop")
-	check(Game.state == Game.State.WEAPON_SHOP and shop.visible and get_tree().paused, "shop opens + game paused on weapon break")
+	check(Game.state == Game.State.PLAYING and not shop.visible and not get_tree().paused, "weapon break does not pop up the shop")
+	check(not Game.is_armed(), "unarmed after the last swing")
+	check(player.body_sprite.sprite_frames == WeaponCatalog.get_frames(WeaponCatalog.UNARMED), "player switches to the unarmed sheet")
+
+	# B opens the shop any time, even while still armed.
+	Game.weapon_id = "weapon_2"
+	Game.weapon_uses = 5
+	Game.weapon_changed.emit(Game.weapon_id, Game.weapon_uses)
+	await get_tree().physics_frame
+	check(player.body_sprite.sprite_frames == WeaponCatalog.get_frames("weapon_2"), "player holds the equipped weapon (battle axe sheet)")
+	await _key_event("open_shop")
+	check(Game.state == Game.State.WEAPON_SHOP and shop.visible and get_tree().paused, "B opens the shop while armed + game paused")
 	Game.coins = 6
 	shop._refresh()
 	var buy_w1: Button = shop._buttons["weapon_1"].button
@@ -329,7 +354,17 @@ func _test_full_game_loop() -> void:
 	check(not buy_w1.disabled and buy_w2.disabled and buy_def.disabled, "affordable enabled, unaffordable + default disabled")
 	buy_w1.pressed.emit()
 	await get_tree().process_frame
-	check(Game.state == Game.State.PLAYING and not get_tree().paused and Game.weapon_id == "weapon_1" and Game.weapon_uses == 7 and Game.coins == 1, "purchase equips weapon, resumes game")
+	check(Game.state == Game.State.PLAYING and not get_tree().paused and Game.weapon_id == "weapon_1" and Game.weapon_uses == 7 and Game.coins == 1, "purchase replaces the held weapon (old uses lost), resumes game")
+	await get_tree().physics_frame
+	check(player.body_sprite.sprite_frames == WeaponCatalog.get_frames("weapon_1"), "player now holds the bought weapon (short sword sheet)")
+
+	# B toggles the shop closed again without buying (and does not reopen it).
+	await _key_event("open_shop")
+	check(shop.visible, "B reopens the shop")
+	await _key_event("open_shop")
+	for i in 3:
+		await get_tree().physics_frame
+	check(Game.state == Game.State.PLAYING and not shop.visible and Game.weapon_id == "weapon_1" and Game.coins == 1, "B closes the shop without buying")
 
 	# Pause works.
 	var ev := InputEventAction.new()
@@ -395,3 +430,35 @@ func _test_game_over_and_restart_state() -> void:
 	get_tree().paused = false
 	Game.reset_run()
 	check(Game.half_hearts == 20 and Game.coins == 0 and Game.score == 0 and Game.weapon_id == "default" and Game.current_level == 1 and Game.time_survived == 0.0, "restart resets hearts/coins/score/weapon/level/timer")
+
+
+func _type_keys(keys: Array) -> void:
+	for code in keys:
+		var event := InputEventKey.new()
+		event.keycode = code
+		event.pressed = true
+		Cheats._input(event)
+
+
+func _test_konami_cheat() -> void:
+	print("[Konami cheat]")
+	Game.reset_run()
+	Game.set_state(Game.State.PLAYING)
+	check(not Cheats.enabled, "cheat off by default")
+	_type_keys([KEY_UP, KEY_UP, KEY_DOWN, KEY_LEFT])
+	check(not Cheats.enabled, "wrong sequence does nothing")
+	_type_keys([KEY_UP, KEY_UP, KEY_UP, KEY_DOWN, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_LEFT, KEY_RIGHT, KEY_B, KEY_A])
+	check(Cheats.enabled, "Konami code enables cheat (extra UP tolerated)")
+	Game.damage_player(10)
+	check(Game.half_hearts == 20, "unlimited health: no damage taken")
+	check(Game.get_weapon_damage() == WeaponCatalog.ENEMY_MAX_HEALTH, "one-hit damage")
+	var croc := (load("res://scenes/enemies/crocodile.tscn") as PackedScene).instantiate() as GroundEnemy
+	add_child(croc)
+	croc.take_hit(Game.get_weapon_damage(), croc.global_position.x - 10.0)
+	check(croc.is_dead, "enemy dies in 1 hit")
+	croc.queue_free()
+	_type_keys(Cheats.SEQUENCE)
+	check(not Cheats.enabled, "typing code again disables cheat")
+	Game.damage_player(3)
+	check(Game.half_hearts == 17, "damage works again after disabling")
+	check(Game.get_weapon_damage() == WeaponCatalog.get_damage("default"), "normal weapon damage restored")

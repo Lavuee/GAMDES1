@@ -1,6 +1,7 @@
 extends Control
 ## Settings overlay used by both the main menu and the pause menu:
-## master / music / SFX volume, fullscreen and a controls reference.
+## master / music / SFX volume, fullscreen, controls and gameplay tips
+## (the tips that used to be shown as signs inside the levels).
 
 signal closed
 

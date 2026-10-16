@@ -1,29 +1,276 @@
 [gd_scene format=3]
 
-[ext_resource type="Texture2D" path="res://assets/sprites/abante/background.png" id="1_text"]
-[ext_resource type="Texture2D" path="res://assets/backgrounds/jungle_bushes.png" id="2_text"]
+[ext_resource type="Script" path="res://scripts/world/fantasy_background.gd" id="1_scri"]
+[ext_resource type="Texture2D" path="res://assets/backgrounds/fantasy/sky.png" id="2_sky"]
+[ext_resource type="Texture2D" path="res://assets/backgrounds/fantasy/clouds.png" id="3_clou"]
+[ext_resource type="Texture2D" path="res://assets/backgrounds/fantasy/mountains.png" id="4_moun"]
+[ext_resource type="Texture2D" path="res://assets/backgrounds/fantasy/floating_islands.png" id="5_isla"]
+[ext_resource type="Texture2D" path="res://assets/backgrounds/fantasy/forest.png" id="6_fore"]
+[ext_resource type="Texture2D" path="res://assets/backgrounds/fantasy/waterfalls.png" id="7_wate"]
+[ext_resource type="Texture2D" path="res://assets/backgrounds/fantasy/river.png" id="8_rive"]
+[ext_resource type="Texture2D" path="res://assets/backgrounds/fantasy/ruins_vines.png" id="9_ruin"]
+[ext_resource type="Texture2D" path="res://assets/backgrounds/fantasy/fx/light_ray.png" id="10_ray"]
+[ext_resource type="Texture2D" path="res://assets/backgrounds/fantasy/fx/sparkle.png" id="11_spar"]
+[ext_resource type="Texture2D" path="res://assets/backgrounds/fantasy/fx/glow.png" id="12_glow"]
+[ext_resource type="Shader" path="res://assets/shaders/waterfall_flow.gdshader" id="13_fall"]
+[ext_resource type="Shader" path="res://assets/shaders/water_shimmer.gdshader" id="14_shim"]
+[ext_resource type="Shader" path="res://assets/shaders/foliage_sway.gdshader" id="15_sway"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_forest"]
+shader = ExtResource("15_sway")
+shader_parameter/grain = 2.0
+shader_parameter/amplitude = 1.0
+shader_parameter/speed = 0.8
+shader_parameter/wave_length = 0.03
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_falls"]
+shader = ExtResource("13_fall")
+shader_parameter/grain = 2.0
+shader_parameter/speed = 1.6
+shader_parameter/streak_density = 0.35
+shader_parameter/highlight = Vector3(0.25, 0.3, 0.32)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_river"]
+shader = ExtResource("14_shim")
+shader_parameter/grain = 2.0
+shader_parameter/ripple_speed = 1.6
+shader_parameter/ripple_pixels = 2.0
+shader_parameter/sparkle_rate = 5.0
+shader_parameter/sparkle_amount = 0.012
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ruins"]
+shader = ExtResource("15_sway")
+shader_parameter/grain = 2.0
+shader_parameter/amplitude = 2.0
+shader_parameter/speed = 1.3
+shader_parameter/wave_length = 0.06
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_add"]
+blend_mode = 1
+
+[sub_resource type="Gradient" id="Gradient_mote_life"]
+offsets = PackedFloat32Array(0, 0.2, 0.75, 1)
+colors = PackedColorArray(1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0.8, 1, 1, 1, 0)
+
+[sub_resource type="Gradient" id="Gradient_mote_hue"]
+offsets = PackedFloat32Array(0, 0.5, 1)
+colors = PackedColorArray(0.55, 1, 1, 1, 0.85, 0.6, 1, 1, 1, 0.9, 0.5, 1)
+
+[sub_resource type="Curve" id="Curve_mote_size"]
+_data = [Vector2(0, 0.4), 0.0, 0.0, 0, 0, Vector2(0.5, 1), 0.0, 0.0, 0, 0, Vector2(1, 0.3), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Gradient" id="Gradient_firefly"]
+offsets = PackedFloat32Array(0, 0.15, 0.3, 0.45, 0.6, 0.8, 1)
+colors = PackedColorArray(1, 0.9, 0.4, 0, 1, 0.9, 0.4, 0.9, 1, 0.9, 0.4, 0.3, 1, 0.9, 0.4, 1, 1, 0.9, 0.4, 0.4, 1, 0.9, 0.4, 0.9, 1, 0.9, 0.4, 0)
+
+[sub_resource type="Gradient" id="Gradient_haze"]
+offsets = PackedFloat32Array(0, 0.6, 1)
+colors = PackedColorArray(0.85, 0.93, 1, 0, 0.85, 0.93, 1, 0.5, 0.85, 0.93, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_haze"]
+gradient = SubResource("Gradient_haze")
+width = 4
+height = 64
+fill_to = Vector2(0, 1)
+
+[sub_resource type="Gradient" id="Gradient_mist"]
+offsets = PackedFloat32Array(0, 0.7, 1)
+colors = PackedColorArray(1, 1, 1, 0, 0.92, 0.97, 1, 0.45, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_mist"]
+gradient = SubResource("Gradient_mist")
+width = 4
+height = 64
+fill_to = Vector2(0, 1)
 
 [node name="JungleBackground" type="Node2D"]
 z_index = -10
+script = ExtResource("1_scri")
 
 [node name="Sky" type="Parallax2D" parent="."]
-scroll_scale = Vector2(0.3, 0)
-repeat_size = Vector2(2115, 0)
+scroll_scale = Vector2(0.03, 0)
+repeat_size = Vector2(960, 0)
 repeat_times = 2
 
 [node name="Sprite" type="Sprite2D" parent="Sky"]
-scale = Vector2(1.40625, 1.40625)
-texture = ExtResource("1_text")
+scale = Vector2(2, 2)
+texture = ExtResource("2_sky")
 centered = false
 
-[node name="Bushes" type="Parallax2D" parent="."]
-scroll_scale = Vector2(0.6, 0)
-repeat_size = Vector2(768, 0)
-repeat_times = 4
+[node name="FarClouds" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.05, 0)
+repeat_size = Vector2(3468, 0)
+autoscroll = Vector2(-4, 0)
 
-[node name="Sprite" type="Sprite2D" parent="Bushes"]
-modulate = Color(0.32, 0.55, 0.36, 1)
-position = Vector2(0, 128)
-scale = Vector2(1.5, 1.5)
-texture = ExtResource("2_text")
+[node name="Sprite" type="Sprite2D" parent="FarClouds"]
+modulate = Color(1, 1, 1, 0.5)
+position = Vector2(0, 92)
+texture = ExtResource("3_clou")
 centered = false
+flip_h = true
+
+[node name="Clouds" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.08, 0)
+repeat_size = Vector2(3468, 0)
+autoscroll = Vector2(-10, 0)
+
+[node name="Sprite" type="Sprite2D" parent="Clouds"]
+position = Vector2(0, 4)
+modulate = Color(1, 1, 1, 0.9)
+texture = ExtResource("3_clou")
+centered = false
+
+[node name="Mountains" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.12, 0)
+repeat_size = Vector2(3436, 0)
+
+[node name="Sprite" type="Sprite2D" parent="Mountains"]
+position = Vector2(0, 208)
+texture = ExtResource("4_moun")
+centered = false
+
+[node name="HorizonHaze" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0, 0)
+repeat_size = Vector2(960, 0)
+
+[node name="Sprite" type="Sprite2D" parent="HorizonHaze"]
+texture_filter = 2
+position = Vector2(0, 236)
+scale = Vector2(240, 2.4)
+texture = SubResource("GradientTexture2D_haze")
+centered = false
+
+[node name="LightRays" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.03, 0)
+repeat_size = Vector2(960, 0)
+
+[node name="Ray1" type="Sprite2D" parent="LightRays"]
+material = SubResource("CanvasItemMaterial_add")
+position = Vector2(600, 58)
+rotation = 0.2
+scale = Vector2(1.6, 2.8)
+texture = ExtResource("10_ray")
+centered = false
+
+[node name="Ray2" type="Sprite2D" parent="LightRays"]
+material = SubResource("CanvasItemMaterial_add")
+position = Vector2(625, 66)
+rotation = 0.48
+scale = Vector2(2.4, 2.6)
+texture = ExtResource("10_ray")
+centered = false
+
+[node name="Ray3" type="Sprite2D" parent="LightRays"]
+material = SubResource("CanvasItemMaterial_add")
+position = Vector2(640, 74)
+rotation = 0.78
+scale = Vector2(1.4, 2.2)
+texture = ExtResource("10_ray")
+centered = false
+
+[node name="FloatingIslands" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.2, 0)
+repeat_size = Vector2(3628, 0)
+
+[node name="Sprite" type="Sprite2D" parent="FloatingIslands"]
+position = Vector2(170, 96)
+texture = ExtResource("5_isla")
+centered = false
+
+[node name="Forest" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.32, 0)
+repeat_size = Vector2(3436, 0)
+
+[node name="Sprite" type="Sprite2D" parent="Forest"]
+material = SubResource("ShaderMaterial_forest")
+position = Vector2(0, 316)
+texture = ExtResource("6_fore")
+centered = false
+
+[node name="Waterfalls" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.45, 0)
+repeat_size = Vector2(3628, 0)
+
+[node name="Sprite" type="Sprite2D" parent="Waterfalls"]
+material = SubResource("ShaderMaterial_falls")
+position = Vector2(0, 328)
+texture = ExtResource("7_wate")
+centered = false
+
+[node name="WaterMist" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0, 0)
+repeat_size = Vector2(960, 0)
+
+[node name="Sprite" type="Sprite2D" parent="WaterMist"]
+texture_filter = 2
+position = Vector2(0, 398)
+scale = Vector2(240, 0.8)
+texture = SubResource("GradientTexture2D_mist")
+centered = false
+
+[node name="River" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.55, 0)
+repeat_size = Vector2(3436, 0)
+autoscroll = Vector2(-6, 0)
+
+[node name="Sprite" type="Sprite2D" parent="River"]
+material = SubResource("ShaderMaterial_river")
+position = Vector2(0, 430)
+texture = ExtResource("8_rive")
+centered = false
+
+[node name="Ruins" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.7, 0)
+repeat_size = Vector2(3218, 0)
+
+[node name="Sprite" type="Sprite2D" parent="Ruins"]
+modulate = Color(0.82, 0.87, 0.84, 1)
+material = SubResource("ShaderMaterial_ruins")
+position = Vector2(0, 390)
+texture = ExtResource("9_ruin")
+centered = false
+
+[node name="Magic" type="Node2D" parent="."]
+
+[node name="Motes" type="CPUParticles2D" parent="Magic"]
+material = SubResource("CanvasItemMaterial_add")
+position = Vector2(1600, 260)
+amount = 70
+lifetime = 7.0
+preprocess = 7.0
+randomness = 0.5
+texture = ExtResource("11_spar")
+emission_shape = 3
+emission_rect_extents = Vector2(1600, 230)
+direction = Vector2(0, -1)
+spread = 35.0
+gravity = Vector2(0, -5)
+initial_velocity_min = 6.0
+initial_velocity_max = 16.0
+scale_amount_min = 0.6
+scale_amount_max = 1.2
+scale_amount_curve = SubResource("Curve_mote_size")
+color_ramp = SubResource("Gradient_mote_life")
+color_initial_ramp = SubResource("Gradient_mote_hue")
+
+[node name="Fireflies" type="CPUParticles2D" parent="Magic"]
+material = SubResource("CanvasItemMaterial_add")
+position = Vector2(1600, 410)
+amount = 40
+lifetime = 5.0
+preprocess = 5.0
+randomness = 0.6
+texture = ExtResource("12_glow")
+emission_shape = 3
+emission_rect_extents = Vector2(1600, 60)
+direction = Vector2(1, -0.3)
+spread = 180.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 6.0
+initial_velocity_max = 18.0
+damping_min = 1.0
+damping_max = 3.0
+scale_amount_min = 0.25
+scale_amount_max = 0.4
+color_ramp = SubResource("Gradient_firefly")

@@ -103,6 +103,19 @@ func _build_sound_library() -> void:
 		"crumble": [["noise", 500, 150, 0.25, 0.3]],
 		"land": [["noise", 300, 120, 0.05, 0.15]],
 		"denied": [["square", 160, 140, 0.15, 0.3]],
+		# Enemy voices (GroundEnemy.voice + "_idle/_alert/_attack/_hurt/_die").
+		"croc_idle": [["noise", 260, 180, 0.3, 0.16], ["square", 70, 60, 0.25, 0.1]],
+		"croc_alert": [["square", 95, 70, 0.3, 0.3], ["noise", 380, 160, 0.25, 0.26]],
+		"croc_attack": [["noise", 2600, 900, 0.05, 0.45], ["square", 180, 70, 0.1, 0.4]],
+		"croc_hurt": [["square", 210, 120, 0.16, 0.36], ["noise", 500, 200, 0.08, 0.2]],
+		"croc_die": [["square", 160, 55, 0.5, 0.36], ["noise", 300, 80, 0.25, 0.2]],
+		"snake_idle": [["noise", 5200, 4200, 0.35, 0.1]],
+		"snake_alert": [["noise", 6500, 4000, 0.45, 0.2]],
+		"snake_attack": [["noise", 7500, 2500, 0.1, 0.3], ["square", 520, 220, 0.07, 0.24]],
+		"snake_hurt": [["noise", 5500, 2000, 0.12, 0.26], ["square", 640, 320, 0.08, 0.2]],
+		"snake_die": [["noise", 5000, 700, 0.55, 0.22], ["square", 320, 80, 0.3, 0.18]],
+		"bird_caw": [["square", 900, 700, 0.09, 0.18], ["square", 820, 620, 0.12, 0.18]],
+		"bird_screech": [["square", 1300, 2300, 0.08, 0.22], ["square", 2300, 1000, 0.2, 0.22]],
 	}
 	for sound_name in recipes:
 		var override := _load_override(sound_name)

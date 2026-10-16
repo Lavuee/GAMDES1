@@ -1,7 +1,9 @@
 extends Control
-## Weapon shop overlay. Opens automatically when a weapon breaks (world is
-## frozen) or when an unarmed player presses B. Any affordable weapon can be
-## bought in any order; the default weapon is only free at the start of a run.
+## Weapon shop overlay. Opened only by the player with B (any time during
+## play, armed or not); the world is frozen while it is open. Any affordable
+## weapon can be bought in any order and replaces the current one (its
+## remaining uses are lost). The dagger is only free at the start of a run.
+## B, ESC or CLOSE leaves without buying.
 
 signal closed(purchased_weapon_id: String)
 
@@ -26,11 +28,8 @@ func _ready() -> void:
 	UIFx.wire_buttons(self)
 
 
-## `from_weapon_break` changes the heading text.
-func open(from_weapon_break: bool) -> void:
-	title_label.text = "WEAPON BROKEN!" if from_weapon_break else "WEAPON SHOP"
-	if from_weapon_break:
-		Audio.play("weapon_break")
+func open() -> void:
+	title_label.text = "WEAPON SHOP"
 	_refresh()
 	UIFx.fade_in(self, 0.15)
 	_focus_first_available()
@@ -109,13 +108,15 @@ func _refresh() -> void:
 			style.border_color = AFFORDABLE_BORDER if affordable else UNAFFORDABLE_BORDER
 			card.add_theme_stylebox_override("panel", style)
 
-	if any_affordable:
-		subtitle_label.text = "Choose your next weapon"
-		leave_button.text = "STAY UNARMED"
+	leave_button.text = "CLOSE"
+	if Game.is_armed():
+		subtitle_label.text = "Holding: %s (%d uses left)" % [WeaponCatalog.get_display_name(Game.weapon_id), Game.weapon_uses]
+		if any_affordable:
+			message_label.text = "Buying replaces your current weapon. Its remaining uses will be lost."
 	else:
-		subtitle_label.text = "Not enough coins for any weapon."
-		message_label.text = "You are UNARMED. Collect coins, then press B to buy a weapon."
-		leave_button.text = "CONTINUE UNARMED"
+		subtitle_label.text = "You are UNARMED"
+	if not any_affordable:
+		message_label.text = "Not enough coins for any weapon. Collect more coins and come back (B)."
 
 
 func _focus_first_available() -> void:
@@ -145,3 +146,10 @@ func _on_leave_pressed() -> void:
 func _close(purchased_weapon_id: String) -> void:
 	visible = false
 	closed.emit(purchased_weapon_id)
+
+
+## B (the shop key) or ESC closes the shop without buying.
+func _unhandled_input(event: InputEvent) -> void:
+	if visible and (event.is_action_pressed("open_shop") or event.is_action_pressed("pause")):
+		get_viewport().set_input_as_handled()
+		_on_leave_pressed()
